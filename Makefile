@@ -25,7 +25,7 @@ clean:
 
 binary-build:
 
-	GOOS=linux CGO_ENABLED=0 go build -o release/vela-kubernetes github.com/go-vela/vela-kubernetes/cmd/vela-kubernetes
+	GOOS=linux CGO_ENABLED=0 go build -o release/vela-downstream github.com/go-vela/vela-downstream/cmd/vela-downstream
 
 #################################
 ######    Docker Build     ######
@@ -33,7 +33,7 @@ binary-build:
 
 docker-build:
 
-	docker build --no-cache -t vela-kubernetes:local .
+	docker build --no-cache -t vela-downstream:local .
 
 #################################
 ######     Docker Run      ######
@@ -42,9 +42,9 @@ docker-build:
 docker-run:
 
 	docker run --rm \
-		vela-kubernetes:local
+		vela-downstream:local
 
 docker-example:
 
 	docker run --rm \
-		vela-kubernetes:local
+		vela-downstream:local
