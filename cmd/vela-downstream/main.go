@@ -46,6 +46,27 @@ func main() {
 			Usage:  "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
 			Value:  "info",
 		},
+
+		// Config Flags
+
+		cli.StringFlag{
+			EnvVar: "PARAMETER_SERVER,CONFIG_SERVER,VELA_SERVER,DOWNSTREAM_SERVER",
+			Name:   "config.server",
+			Usage:  "Vela server to authenticate with",
+		},
+		cli.StringFlag{
+			EnvVar: "PARAMETER_TOKEN,CONFIG_TOKEN,VELA_TOKEN,DOWNSTREAM_TOKEN",
+			Name:   "config.token",
+			Usage:  "user token to authenticate with the Vela server",
+		},
+
+		// Repo Flags
+
+		cli.StringSliceFlag{
+			EnvVar: "PARAMETER_REPOS,REPO_NAMES,DOWNSTREAM_REPOS",
+			Name:   "repo.names",
+			Usage:  "list of repositories to trigger",
+		},
 	}
 
 	err := app.Run(os.Args)
@@ -82,5 +103,25 @@ func run(c *cli.Context) error {
 		"time": time.Now(),
 	}).Info("Vela Downstream Plugin")
 
-	return nil
+	// create the plugin
+	p := &Plugin{
+		// config configuration
+		Config: &Config{
+			Server: c.String("config.server"),
+			Token:  c.String("config.token"),
+		},
+		// repo configuration
+		Repo: &Repo{
+			Names: c.StringSlice("repo.names"),
+		},
+	}
+
+	// validate the plugin
+	err := p.Validate()
+	if err != nil {
+		return err
+	}
+
+	// execute the plugin
+	return p.Exec()
 }
