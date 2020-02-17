@@ -7,6 +7,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-vela/sdk-go/vela"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,6 +18,25 @@ type Config struct {
 	Server string
 	// user token to authenticate with the Vela server
 	Token string
+}
+
+// New creates a Vela client for triggering builds.
+func (c *Config) New() (*vela.Client, error) {
+	logrus.Trace("creating new Vela client from plugin configuration")
+
+	// create Vela client from configuration
+	client, err := vela.NewClient(c.Server, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if a token is provided for authentication
+	if len(c.Token) > 0 {
+		// set the token for authentication in the Vela client
+		client.Authentication.SetTokenAuth(c.Token)
+	}
+
+	return client, nil
 }
 
 // Validate verifies the Config is properly configured.
