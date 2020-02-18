@@ -21,6 +21,7 @@ type Repo struct {
 
 // Parse verifies the Repo is properly configured.
 func (r *Repo) Parse() ([]*library.Repo, error) {
+	// create new repos type to store parsed repos
 	repos := []*library.Repo{}
 
 	for _, name := range r.Names {
@@ -56,6 +57,11 @@ func (r *Repo) Parse() ([]*library.Repo, error) {
 			repo.SetBranch("master")
 		}
 
+		// set the full name for the repo
+		repo.SetFullName(
+			fmt.Sprintf("%s/%s", repo.GetOrg(), repo.GetName()),
+		)
+
 		// add the parsed repo to our list of repos
 		repos = append(repos, repo)
 	}
@@ -72,11 +78,14 @@ func (r *Repo) Validate() error {
 		return fmt.Errorf("no repo names provided")
 	}
 
+	// iterate through all provided repo names
 	for _, repo := range r.Names {
+		// check if the repo name has at least one slash
 		if !strings.Contains(repo, "/") {
 			return fmt.Errorf("invalid <org>/<repo> name provided: %s", repo)
 		}
 
+		// check if the repo name has a more than one slash
 		if strings.Count(repo, "/") > 1 {
 			return fmt.Errorf("invalid <org>/<repo> name provided: %s", repo)
 		}
