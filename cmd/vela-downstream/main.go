@@ -65,7 +65,7 @@ func main() {
 		cli.StringSliceFlag{
 			EnvVar: "PARAMETER_REPOS,REPO_NAMES,DOWNSTREAM_REPOS",
 			Name:   "repo.names",
-			Usage:  "list of repositories to trigger",
+			Usage:  "list of <org>/<repo> names to trigger",
 		},
 	}
 
