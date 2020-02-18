@@ -62,6 +62,12 @@ func main() {
 
 		// Repo Flags
 
+		cli.StringFlag{
+			EnvVar: "PARAMETER_BRANCH,REPO_BRANCH",
+			Name:   "repo.branch",
+			Usage:  "default branch to trigger builds for the repo",
+			Value:  "master",
+		},
 		cli.StringSliceFlag{
 			EnvVar: "PARAMETER_REPOS,REPO_NAMES,DOWNSTREAM_REPOS",
 			Name:   "repo.names",
@@ -112,7 +118,8 @@ func run(c *cli.Context) error {
 		},
 		// repo configuration
 		Repo: &Repo{
-			Names: c.StringSlice("repo.names"),
+			Branch: c.String("repo.branch"),
+			Names:  c.StringSlice("repo.names"),
 		},
 	}
 

@@ -14,7 +14,8 @@ import (
 func TestDownstream_Repo_Parse(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world@test", "go-vela/hello-world"},
+		Branch: "master",
+		Names:  []string{"go-vela/hello-world@test", "go-vela/hello-world"},
 	}
 
 	r1 := new(library.Repo)
@@ -45,7 +46,8 @@ func TestDownstream_Repo_Parse(t *testing.T) {
 func TestDownstream_Repo_Parse_MultipleSlashes(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world/master"},
+		Branch: "master",
+		Names:  []string{"go-vela/hello-world/master"},
 	}
 
 	// run test
@@ -62,7 +64,8 @@ func TestDownstream_Repo_Parse_MultipleSlashes(t *testing.T) {
 func TestDownstream_Repo_Parse_MultipleAtSigns(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world@master@"},
+		Branch: "master",
+		Names:  []string{"go-vela/hello-world@master@"},
 	}
 
 	// run test
@@ -79,7 +82,8 @@ func TestDownstream_Repo_Parse_MultipleAtSigns(t *testing.T) {
 func TestDownstream_Repo_Validate(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world@master"},
+		Branch: "master",
+		Names:  []string{"go-vela/hello-world@master"},
 	}
 
 	err := r.Validate()
@@ -88,9 +92,24 @@ func TestDownstream_Repo_Validate(t *testing.T) {
 	}
 }
 
+func TestDownstream_Repo_Validate_NoBranch(t *testing.T) {
+	// setup types
+	r := &Repo{
+		Names: []string{"go-vela/hello-world@master"},
+	}
+
+	// run test
+	err := r.Validate()
+	if err == nil {
+		t.Errorf("Validate should have returned err")
+	}
+}
+
 func TestDownstream_Repo_Validate_NoNames(t *testing.T) {
 	// setup types
-	r := &Repo{}
+	r := &Repo{
+		Branch: "master",
+	}
 
 	// run test
 	err := r.Validate()
@@ -102,7 +121,8 @@ func TestDownstream_Repo_Validate_NoNames(t *testing.T) {
 func TestDownstream_Repo_Validate_NoSlash(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela_hello-world"},
+		Branch: "master",
+		Names:  []string{"go-vela_hello-world"},
 	}
 
 	// run test
@@ -115,7 +135,8 @@ func TestDownstream_Repo_Validate_NoSlash(t *testing.T) {
 func TestDownstream_Repo_Validate_MultipleSlashes(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world/master"},
+		Branch: "master",
+		Names:  []string{"go-vela/hello-world/master"},
 	}
 
 	// run test
