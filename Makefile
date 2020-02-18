@@ -42,9 +42,17 @@ docker-build:
 docker-run:
 
 	docker run --rm \
+		-e DOWNSTREAM_SERVER \
+		-e DOWNSTREAM_TOKEN \
+		-e PARAMETER_LOG_LEVEL \
+		-e PARAMETER_BRANCH \
+		-e PARAMETER_REPOS \
 		vela-downstream:local
 
 docker-example:
 
 	docker run --rm \
+		-e DOWNSTREAM_SERVER \
+		-e DOWNSTREAM_TOKEN \
+		-e PARAMETER_REPOS \
 		vela-downstream:local
