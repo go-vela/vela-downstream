@@ -6,6 +6,8 @@
 
 Vela plugin designed for triggering builds in other repositories.
 
+Internally, the plugin is a wrapper around the [Vela Golang library](https://github.com/go-vela/sdk-go).
+
 ## Documentation
 
 For installation and usage, please [visit our docs](https://go-vela.github.io/docs).
