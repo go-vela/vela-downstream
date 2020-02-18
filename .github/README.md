@@ -1,4 +1,4 @@
-# vela-kubernetes
+# vela-downstream
 
 [![GoDoc](https://godoc.org/github.com/go-vela/vela-downstream?status.svg)](https://godoc.org/github.com/go-vela/vela-downstream)
 [![Go Report Card](https://goreportcard.com/badge/go-vela/vela-downstream)](https://goreportcard.com/report/go-vela/vela-downstream)
