@@ -78,11 +78,14 @@ func (r *Repo) Validate() error {
 		return fmt.Errorf("no repo names provided")
 	}
 
+	// iterate through all provided repo names
 	for _, repo := range r.Names {
+		// check if the repo name has at least one slash
 		if !strings.Contains(repo, "/") {
 			return fmt.Errorf("invalid <org>/<repo> name provided: %s", repo)
 		}
 
+		// check if the repo name has a more than one slash
 		if strings.Count(repo, "/") > 1 {
 			return fmt.Errorf("invalid <org>/<repo> name provided: %s", repo)
 		}
