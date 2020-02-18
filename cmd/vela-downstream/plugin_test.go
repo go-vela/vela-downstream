@@ -8,13 +8,21 @@ import (
 	"testing"
 )
 
-func TestDownstream_Plugin_Exec(t *testing.T) {
+func TestDownstream_Plugin_Exec_Error(t *testing.T) {
 	// setup types
-	p := &Plugin{}
+	p := &Plugin{
+		Config: &Config{
+			Server: "http://vela.localhost.com",
+			Token:  "superSecretVelaToken",
+		},
+		Repo: &Repo{
+			Names: []string{"go-vela/hello-world@master"},
+		},
+	}
 
 	err := p.Exec()
-	if err != nil {
-		t.Errorf("Exec returned err: %v", err)
+	if err == nil {
+		t.Errorf("Exec should have returned err")
 	}
 }
 
@@ -26,7 +34,7 @@ func TestDownstream_Plugin_Validate(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"vela/hello-world"},
+			Names: []string{"go-vela/hello-world@master"},
 		},
 	}
 
@@ -41,7 +49,7 @@ func TestDownstream_Plugin_Validate_NoConfig(t *testing.T) {
 	p := &Plugin{
 		Config: &Config{},
 		Repo: &Repo{
-			Names: []string{"vela/hello-world"},
+			Names: []string{"go-vela/hello-world@master"},
 		},
 	}
 

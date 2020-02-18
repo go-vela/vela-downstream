@@ -21,6 +21,7 @@ type Repo struct {
 
 // Parse verifies the Repo is properly configured.
 func (r *Repo) Parse() ([]*library.Repo, error) {
+	// create new repos type to store parsed repos
 	repos := []*library.Repo{}
 
 	for _, name := range r.Names {
@@ -55,6 +56,11 @@ func (r *Repo) Parse() ([]*library.Repo, error) {
 			// set the default branch from the provided input
 			repo.SetBranch("master")
 		}
+
+		// set the full name for the repo
+		repo.SetFullName(
+			fmt.Sprintf("%s/%s", repo.GetOrg(), repo.GetName()),
+		)
 
 		// add the parsed repo to our list of repos
 		repos = append(repos, repo)
