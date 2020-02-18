@@ -15,6 +15,8 @@ import (
 
 // Repo represents the plugin configuration for Repo information.
 type Repo struct {
+	// default branch to trigger a build for the repo
+	Branch string
 	// list of Vela repos to trigger a build for
 	Names []string
 }
@@ -54,7 +56,7 @@ func (r *Repo) Parse() ([]*library.Repo, error) {
 		// check if a branch was parsed from the input
 		if len(repo.GetBranch()) == 0 {
 			// set the default branch from the provided input
-			repo.SetBranch("master")
+			repo.SetBranch(r.Branch)
 		}
 
 		// set the full name for the repo
@@ -72,6 +74,11 @@ func (r *Repo) Parse() ([]*library.Repo, error) {
 // Validate verifies the Repo is properly configured.
 func (r *Repo) Validate() error {
 	logrus.Trace("validating repo configuration")
+
+	// verify repo branch is provided
+	if len(r.Branch) == 0 {
+		return fmt.Errorf("no repo branch provided")
+	}
 
 	// verify repo names are provided
 	if len(r.Names) == 0 {

@@ -16,7 +16,8 @@ func TestDownstream_Plugin_Exec_Error(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Branch: "master",
+			Names:  []string{"go-vela/hello-world@master"},
 		},
 	}
 
@@ -34,7 +35,8 @@ func TestDownstream_Plugin_Validate(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Branch: "master",
+			Names:  []string{"go-vela/hello-world@master"},
 		},
 	}
 
@@ -49,7 +51,8 @@ func TestDownstream_Plugin_Validate_NoConfig(t *testing.T) {
 	p := &Plugin{
 		Config: &Config{},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Branch: "master",
+			Names:  []string{"go-vela/hello-world@master"},
 		},
 	}
 
