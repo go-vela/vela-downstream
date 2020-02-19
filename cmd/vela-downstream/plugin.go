@@ -42,11 +42,15 @@ func (p *Plugin) Exec() error {
 		// create new build type to store last successful build
 		build := new(library.Build)
 
+		logrus.Infof("Listing builds for %s", repo.GetFullName())
+
 		// send API call to capture a list of builds for the repo
 		builds, _, err := client.Build.GetAll(repo.GetOrg(), repo.GetName())
 		if err != nil {
-			return fmt.Errorf("unable to capture latest build for %s: %w", repo.GetFullName(), err)
+			return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 		}
+
+		logrus.Debugf("Searching for latest successful build with branch %s", repo.GetBranch())
 
 		// iterate through list of builds for the repo
 		for _, b := range *builds {
@@ -57,11 +61,15 @@ func (p *Plugin) Exec() error {
 			}
 		}
 
+		logrus.Infof("Restarting build %s/%d", repo.GetFullName(), build.GetNumber())
+
 		// send API call to restart the latest build for the repo
-		_, _, err = client.Build.Restart(repo.GetOrg(), repo.GetName(), build.GetNumber())
+		b, _, err := client.Build.Restart(repo.GetOrg(), repo.GetName(), build.GetNumber())
 		if err != nil {
 			return fmt.Errorf("unable to restart build %s/%d", repo.GetFullName(), build.GetNumber())
 		}
+
+		logrus.Infof("New build created %s/%d", repo.GetFullName(), b.GetNumber())
 	}
 
 	return nil

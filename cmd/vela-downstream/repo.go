@@ -23,10 +23,14 @@ type Repo struct {
 
 // Parse verifies the Repo is properly configured.
 func (r *Repo) Parse() ([]*library.Repo, error) {
+	logrus.Trace("parsing repos from provided configuration")
+
 	// create new repos type to store parsed repos
 	repos := []*library.Repo{}
 
 	for _, name := range r.Names {
+		logrus.Tracef("parsing repo %s", name)
+
 		// create new repo type to store parsed repo information
 		repo := new(library.Repo)
 
