@@ -32,6 +32,8 @@ func (c *Config) New() (*vela.Client, error) {
 
 	// check if a token is provided for authentication
 	if len(c.Token) > 0 {
+		logrus.Debugf("setting authentication token for Vela")
+
 		// set the token for authentication in the Vela client
 		client.Authentication.SetTokenAuth(c.Token)
 	}
