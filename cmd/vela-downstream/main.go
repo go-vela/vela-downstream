@@ -104,9 +104,9 @@ func run(c *cli.Context) error {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"code": "https://github.com/go-vela/vela-downstream",
-		"docs": "https://go-vela.github.io/docs/plugins/registry/downstream",
-		"time": time.Now(),
+		"code":     "https://github.com/go-vela/vela-downstream",
+		"docs":     "https://go-vela.github.io/docs/plugins/registry/downstream",
+		"registry": "https://hub.docker.com/r/target/vela-downstream",
 	}).Info("Vela Downstream Plugin")
 
 	// create the plugin
