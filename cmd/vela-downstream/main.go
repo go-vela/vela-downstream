@@ -50,12 +50,12 @@ func main() {
 		// Config Flags
 
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_SERVER,CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
+			EnvVars: []string{"PARAMETER_SERVER", "CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
 			Name:    "config.server",
 			Usage:   "Vela server to authenticate with",
 		},
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_TOKEN,CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
+			EnvVars: []string{"PARAMETER_TOKEN", "CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
 			Name:    "config.token",
 			Usage:   "user token to authenticate with the Vela server",
 		},
