@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -24,7 +24,7 @@ func main() {
 	app.HelpName = "vela-downstream"
 	app.Usage = "Vela Downstream plugin for triggering builds in other repos"
 	app.Copyright = "Copyright (c) 2020 Target Brands, Inc. All rights reserved."
-	app.Authors = []cli.Author{
+	app.Authors = []*cli.Author{
 		{
 			Name:  "Vela Admins",
 			Email: "vela@target.com",
@@ -40,38 +40,38 @@ func main() {
 
 	app.Flags = []cli.Flag{
 
-		cli.StringFlag{
-			EnvVar: "PARAMETER_LOG_LEVEL,VELA_LOG_LEVEL,DOWNSTREAM_LOG_LEVEL",
-			Name:   "log.level",
-			Usage:  "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:  "info",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_LOG_LEVEL", "VELA_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
+			Name:    "log.level",
+			Usage:   "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Value:   "info",
 		},
 
 		// Config Flags
 
-		cli.StringFlag{
-			EnvVar: "PARAMETER_SERVER,CONFIG_SERVER,VELA_SERVER,DOWNSTREAM_SERVER",
-			Name:   "config.server",
-			Usage:  "Vela server to authenticate with",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_SERVER", "CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
+			Name:    "config.server",
+			Usage:   "Vela server to authenticate with",
 		},
-		cli.StringFlag{
-			EnvVar: "PARAMETER_TOKEN,CONFIG_TOKEN,VELA_TOKEN,DOWNSTREAM_TOKEN",
-			Name:   "config.token",
-			Usage:  "user token to authenticate with the Vela server",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_TOKEN", "CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
+			Name:    "config.token",
+			Usage:   "user token to authenticate with the Vela server",
 		},
 
 		// Repo Flags
 
-		cli.StringFlag{
-			EnvVar: "PARAMETER_BRANCH,REPO_BRANCH",
-			Name:   "repo.branch",
-			Usage:  "default branch to trigger builds for the repo",
-			Value:  "master",
+		&cli.StringFlag{
+			EnvVars: []string{"PARAMETER_BRANCH", "REPO_BRANCH"},
+			Name:    "repo.branch",
+			Usage:   "default branch to trigger builds for the repo",
+			Value:   "master",
 		},
-		cli.StringSliceFlag{
-			EnvVar: "PARAMETER_REPOS,REPO_NAMES,DOWNSTREAM_REPOS",
-			Name:   "repo.names",
-			Usage:  "list of <org>/<repo> names to trigger",
+		&cli.StringSliceFlag{
+			EnvVars: []string{"PARAMETER_REPOS", "REPO_NAMES", "DOWNSTREAM_REPOS"},
+			Name:    "repo.names",
+			Usage:   "list of <org>/<repo> names to trigger",
 		},
 	}
 
