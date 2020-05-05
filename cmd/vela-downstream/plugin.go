@@ -45,7 +45,7 @@ func (p *Plugin) Exec() error {
 		logrus.Infof("Listing builds for %s", repo.GetFullName())
 
 		// send API call to capture a list of builds for the repo
-		builds, _, err := client.Build.GetAll(repo.GetOrg(), repo.GetName())
+		builds, _, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), nil)
 		if err != nil {
 			return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 		}
