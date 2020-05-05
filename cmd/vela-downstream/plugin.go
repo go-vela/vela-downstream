@@ -50,12 +50,12 @@ func (p *Plugin) Exec() error {
 			return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 		}
 
-		logrus.Debugf("Searching for latest successful build with branch %s", p.Repo.Branch)
+		logrus.Debugf("Searching for latest successful build with branch %s", repo.GetBranch())
 
 		// iterate through list of builds for the repo
 		for _, b := range *builds {
 			// check if the build branch matches and was successful
-			if b.GetBranch() == p.Repo.Branch && b.GetStatus() == constants.StatusSuccess {
+			if b.GetBranch() == repo.GetBranch() && b.GetStatus() == constants.StatusSuccess {
 				build = &b
 				break
 			}
@@ -63,7 +63,7 @@ func (p *Plugin) Exec() error {
 
 		// check if we found a build to restart
 		if build.GetNumber() == 0 {
-			return fmt.Errorf("no successful build with branch %s found for %s", p.Repo.Branch, repo.GetFullName())
+			return fmt.Errorf("no successful build with branch %s found for %s", repo.GetBranch(), repo.GetFullName())
 		}
 
 		logrus.Infof("Restarting build %s/%d", repo.GetFullName(), build.GetNumber())
