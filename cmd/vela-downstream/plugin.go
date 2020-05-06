@@ -61,6 +61,11 @@ func (p *Plugin) Exec() error {
 			}
 		}
 
+		// check if we found a build to restart
+		if build.GetNumber() == 0 {
+			return fmt.Errorf("no successful build with branch %s found for %s", repo.GetBranch(), repo.GetFullName())
+		}
+
 		logrus.Infof("Restarting build %s/%d", repo.GetFullName(), build.GetNumber())
 
 		// send API call to restart the latest build for the repo
