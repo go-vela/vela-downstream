@@ -64,14 +64,15 @@ func (p *Plugin) Exec() error {
 				return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 			}
 
-			// break the loop after 5 pages of results
-			// giving us a total of 500 builds collected
-			if resp.NextPage > 5 {
-				break
-			}
-
 			// add the results to the list of builds
 			builds = append(builds, *b...)
+
+			// break the loop if there is no more results
+			// to page through or after 5 pages of results
+			// giving us up to a total of 500 builds
+			if resp.NextPage == 0 || resp.NextPage > 5 {
+				break
+			}
 
 			// update the options for listing builds
 			// to point at the next page
