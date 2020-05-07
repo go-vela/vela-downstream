@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-vela/sdk-go/vela"
 	"github.com/go-vela/types/constants"
 	"github.com/go-vela/types/library"
 
@@ -42,21 +43,51 @@ func (p *Plugin) Exec() error {
 		// create new build type to store last successful build
 		build := new(library.Build)
 
-		logrus.Infof("Listing builds for %s", repo.GetFullName())
+		logrus.Infof("Listing last 500 builds for %s", repo.GetFullName())
 
-		// send API call to capture a list of builds for the repo
-		builds, _, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), nil)
-		if err != nil {
-			return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
+		// create options for listing builds
+		opts := &vela.ListOptions{
+			// set the default starting page for options
+			Page: 1,
+			// set the max per page for options
+			PerPage: 100,
+		}
+
+		// create new slice of builds to store API results
+		builds := []library.Build{}
+
+		// loop to capture *ALL* the builds
+		for {
+			// send API call to capture a list of builds for the repo
+			b, resp, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), opts)
+			if err != nil {
+				return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
+			}
+
+			// break the loop after 5 pages of results
+			// giving us a total of 500 builds collected
+			if resp.NextPage > 5 {
+				break
+			}
+
+			// add the results to the list of builds
+			builds = append(builds, *b...)
+
+			// update the options for listing builds
+			// to point at the next page
+			opts.Page = resp.NextPage
 		}
 
 		logrus.Debugf("Searching for latest successful build with branch %s", repo.GetBranch())
 
 		// iterate through list of builds for the repo
-		for _, b := range *builds {
+		for _, b := range builds {
 			// check if the build branch matches and was successful
 			if b.GetBranch() == repo.GetBranch() && b.GetStatus() == constants.StatusSuccess {
+				// update the build object to the current build
 				build = &b
+
+				// break out of the loop
 				break
 			}
 		}
