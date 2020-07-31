@@ -41,37 +41,42 @@ func main() {
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_LOG_LEVEL", "VELA_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
-			Name:    "log.level",
-			Usage:   "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:   "info",
+			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "VELA_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
+			FilePath: string("/vela/parameters/downstream/log_level,/vela/secrets/downstream/log_level"),
+			Name:     "log.level",
+			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Value:    "info",
 		},
 
 		// Config Flags
 
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_SERVER", "CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
-			Name:    "config.server",
-			Usage:   "Vela server to authenticate with",
+			EnvVars:  []string{"PARAMETER_SERVER", "CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
+			FilePath: string("/vela/parameters/downstream/config/server,/vela/secrets/downstream/config/server"),
+			Name:     "config.server",
+			Usage:    "Vela server to authenticate with",
 		},
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_TOKEN", "CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
-			Name:    "config.token",
-			Usage:   "user token to authenticate with the Vela server",
+			EnvVars:  []string{"PARAMETER_TOKEN", "CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
+			FilePath: string("/vela/parameters/downstream/config/token,/vela/secrets/downstream/config/token"),
+			Name:     "config.token",
+			Usage:    "user token to authenticate with the Vela server",
 		},
 
 		// Repo Flags
 
 		&cli.StringFlag{
-			EnvVars: []string{"PARAMETER_BRANCH", "REPO_BRANCH"},
-			Name:    "repo.branch",
-			Usage:   "default branch to trigger builds for the repo",
-			Value:   "master",
+			EnvVars:  []string{"PARAMETER_BRANCH", "REPO_BRANCH"},
+			FilePath: string("/vela/parameters/downstream/repo/branch,/vela/secrets/downstream/repo/branch"),
+			Name:     "repo.branch",
+			Usage:    "default branch to trigger builds for the repo",
+			Value:    "master",
 		},
 		&cli.StringSliceFlag{
-			EnvVars: []string{"PARAMETER_REPOS", "REPO_NAMES", "DOWNSTREAM_REPOS"},
-			Name:    "repo.names",
-			Usage:   "list of <org>/<repo> names to trigger",
+			EnvVars:  []string{"PARAMETER_REPOS", "REPO_NAMES", "DOWNSTREAM_REPOS"},
+			FilePath: string("/vela/parameters/downstream/repo/names,/vela/secrets/downstream/repo/names"),
+			Name:     "repo.names",
+			Usage:    "list of <org>/<repo> names to trigger",
 		},
 	}
 
