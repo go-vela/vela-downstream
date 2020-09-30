@@ -8,15 +8,15 @@ Registry: https://hub.docker.com/r/target/vela-downstream
 
 ## Usage
 
-_The plugin supports reading all parameters via environment variables or files. Values set as a file take precedence over default values set from the environment._
+**NOTE: It is not recommended to use `latest` as the tag for the Docker image. Users should use a semantically versioned tag instead.**
 
 Sample of triggering a downstream build:
 
 ```yaml
 steps:
   - name: trigger_hello-world
-    image: target/vela-downstream:v0.1.0
-    pull: true
+    image: target/vela-downstream:latest
+    pull: always
     parameters:
       branch: master
       repos:
@@ -28,15 +28,14 @@ Sample of triggering a downstream build for multiple repos:
 
 ```diff
 steps:
-+  - name: trigger_multiple
--  - name: trigger_hello-world
-    image: target/vela-downstream:v0.1.0
-    pull: true
+  - name: trigger_multiple
+    image: target/vela-downstream:latest
+    pull: always
     parameters:
       branch: master
       repos:
         - octocat/hello-world
-+        - go-vela/hello-world
++       - go-vela/hello-world
       server: https://vela-server.localhost
 ```
 
@@ -46,17 +45,16 @@ Sample of triggering a downstream build for multiple repos with different branch
 
 ```diff
 steps:
-+  - name: trigger_multiple
--  - name: trigger_hello-world
-    image: target/vela-downstream:v0.1.0
-    pull: true
+  - name: trigger_multiple
+    image: target/vela-downstream:latest
+    pull: always
     parameters:
--      branch: master
+-     branch: master
       repos:
--        - octocat/hello-world
-+        - octocat/hello-world@test
--        - go-vela/hello-world
-+        - go-vela/hello-world@stage
+-       - octocat/hello-world
++       - octocat/hello-world@test
+-       - go-vela/hello-world
++       - go-vela/hello-world@stage
       server: https://vela-server.localhost
 ```
 
@@ -69,8 +67,8 @@ You can use Vela secrets to substitute sensitive values at runtime:
 ```diff
 steps:
   - name: trigger_hello-world
-    image: target/vela-downstream:v0.1.0
-    pull: true
+    image: target/vela-downstream:latest
+    pull: always
 +   secrets: [ downstream_token ]
     parameters:
       branch: master
@@ -81,6 +79,11 @@ steps:
 ```
 
 ## Parameters
+
+**NOTE:**
+
+* the plugin supports reading all parameters via environment variables or files
+* values set from a file take precedence over values set from the environment
 
 The following parameters are used to configure the image:
 
