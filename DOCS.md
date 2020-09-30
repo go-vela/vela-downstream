@@ -16,7 +16,7 @@ Sample of triggering a downstream build:
 steps:
   - name: trigger_hello-world
     image: target/vela-downstream:v0.1.0
-    pull: true
+    pull: always
     parameters:
       branch: master
       repos:
@@ -31,7 +31,7 @@ steps:
 +  - name: trigger_multiple
 -  - name: trigger_hello-world
     image: target/vela-downstream:v0.1.0
-    pull: true
+    pull: always
     parameters:
       branch: master
       repos:
@@ -49,7 +49,7 @@ steps:
 +  - name: trigger_multiple
 -  - name: trigger_hello-world
     image: target/vela-downstream:v0.1.0
-    pull: true
+    pull: always
     parameters:
 -      branch: master
       repos:
@@ -70,7 +70,7 @@ You can use Vela secrets to substitute sensitive values at runtime:
 steps:
   - name: trigger_hello-world
     image: target/vela-downstream:v0.1.0
-    pull: true
+    pull: always
 +   secrets: [ downstream_token ]
     parameters:
       branch: master
