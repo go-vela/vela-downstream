@@ -5,9 +5,13 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 
 	"time"
+
+	"github.com/go-vela/vela-downstream/version"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -33,8 +37,9 @@ func main() {
 
 	// Plugin Metadata
 
-	app.Compiled = time.Now()
 	app.Action = run
+	app.Compiled = time.Now()
+	app.Version = version.New().Semantic()
 
 	// Plugin Flags
 
@@ -51,13 +56,13 @@ func main() {
 		// Config Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SERVER", "CONFIG_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
+			EnvVars:  []string{"PARAMETER_SERVER", "VELA_SERVER", "DOWNSTREAM_SERVER"},
 			FilePath: string("/vela/parameters/downstream/config/server,/vela/secrets/downstream/config/server"),
 			Name:     "config.server",
 			Usage:    "Vela server to authenticate with",
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_TOKEN", "CONFIG_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
+			EnvVars:  []string{"PARAMETER_TOKEN", "VELA_TOKEN", "DOWNSTREAM_TOKEN"},
 			FilePath: string("/vela/parameters/downstream/config/token,/vela/secrets/downstream/config/token"),
 			Name:     "config.token",
 			Usage:    "user token to authenticate with the Vela server",
@@ -66,14 +71,14 @@ func main() {
 		// Repo Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BRANCH", "REPO_BRANCH"},
+			EnvVars:  []string{"PARAMETER_BRANCH", "DOWNSTREAM_BRANCH"},
 			FilePath: string("/vela/parameters/downstream/repo/branch,/vela/secrets/downstream/repo/branch"),
 			Name:     "repo.branch",
 			Usage:    "default branch to trigger builds for the repo",
 			Value:    "master",
 		},
 		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_REPOS", "REPO_NAMES", "DOWNSTREAM_REPOS"},
+			EnvVars:  []string{"PARAMETER_REPOS", "DOWNSTREAM_REPOS"},
 			FilePath: string("/vela/parameters/downstream/repo/names,/vela/secrets/downstream/repo/names"),
 			Name:     "repo.names",
 			Usage:    "list of <org>/<repo> names to trigger",
@@ -88,6 +93,15 @@ func main() {
 
 // run executes the plugin based off the configuration provided.
 func run(c *cli.Context) error {
+	// capture the version information as pretty JSON
+	v, err := json.MarshalIndent(version.New(), "", "  ")
+	if err != nil {
+		return err
+	}
+
+	// output the version information to stdout
+	fmt.Fprintf(os.Stdout, "%s\n", string(v))
+
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
@@ -129,7 +143,7 @@ func run(c *cli.Context) error {
 	}
 
 	// validate the plugin
-	err := p.Validate()
+	err = p.Validate()
 	if err != nil {
 		return err
 	}
