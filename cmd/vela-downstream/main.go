@@ -132,8 +132,10 @@ func run(c *cli.Context) error {
 	p := &Plugin{
 		// config configuration
 		Config: &Config{
-			Server: c.String("config.server"),
-			Token:  c.String("config.token"),
+			Server:     c.String("config.server"),
+			Token:      c.String("config.token"),
+			AppName:    c.App.Name,
+			AppVersion: c.App.Version,
 		},
 		// repo configuration
 		Repo: &Repo{
