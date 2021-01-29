@@ -75,7 +75,7 @@ func main() {
 			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
 			Name:     "repo.branch",
 			Usage:    "default branch to trigger builds for the repo",
-			Value:    "master", // CHANGE TO FIND DEFAULT
+			Value:    "master",
 		},
 		&cli.StringSliceFlag{
 			EnvVars:  []string{"PARAMETER_REPOS", "DOWNSTREAM_REPOS"},
