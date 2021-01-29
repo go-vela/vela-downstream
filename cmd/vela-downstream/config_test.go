@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -18,12 +19,14 @@ func TestDownstream_Config_New(t *testing.T) {
 		Token:  "superSecretVelaToken",
 	}
 
-	want, err := vela.NewClient(c.Server, nil)
+	appID := fmt.Sprintf("%s; %s", c.AppName, c.AppVersion)
+
+	want, err := vela.NewClient(c.Server, appID, nil)
 	if err != nil {
 		t.Errorf("Unable to create new Vela client: %v", err)
 	}
 
-	want.Authentication.SetTokenAuth(c.Token)
+	want.Authentication.SetPersonalAccessTokenAuth(c.Token)
 
 	got, err := c.New()
 	if err != nil {
@@ -66,6 +69,19 @@ func TestDownstream_Config_Validate_NoServer(t *testing.T) {
 	// setup types
 	c := &Config{
 		Token: "superSecretVelaToken",
+	}
+
+	err := c.Validate()
+	if err == nil {
+		t.Errorf("Validate should have returned err")
+	}
+}
+
+func TestDownstream_Config_Validate_InvalidServer(t *testing.T) {
+	// setup types
+	c := &Config{
+		Server: "vela.server",
+		Token:  "superSecretVelaToken",
 	}
 
 	err := c.Validate()

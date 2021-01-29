@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/go-vela/sdk-go/vela"
 
@@ -18,14 +19,21 @@ type Config struct {
 	Server string
 	// user token to authenticate with the Vela server
 	Token string
+	// the app name utilizing this config
+	AppName string
+	// the app version utilizing this config
+	AppVersion string
 }
 
 // New creates a Vela client for triggering builds.
 func (c *Config) New() (*vela.Client, error) {
 	logrus.Trace("creating new Vela client from plugin configuration")
 
+	// create the app string
+	appID := fmt.Sprintf("%s; %s", c.AppName, c.AppVersion)
+
 	// create Vela client from configuration
-	client, err := vela.NewClient(c.Server, nil)
+	client, err := vela.NewClient(c.Server, appID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +43,7 @@ func (c *Config) New() (*vela.Client, error) {
 		logrus.Debugf("setting authentication token for Vela")
 
 		// set the token for authentication in the Vela client
-		client.Authentication.SetTokenAuth(c.Token)
+		client.Authentication.SetPersonalAccessTokenAuth(c.Token)
 	}
 
 	return client, nil
@@ -48,6 +56,12 @@ func (c *Config) Validate() error {
 	// verify server is provided
 	if len(c.Server) == 0 {
 		return fmt.Errorf("no config server provided")
+	}
+
+	// check to make sure it's a valid url
+	_, err := url.ParseRequestURI(c.Server)
+	if err != nil {
+		return fmt.Errorf("%s is not a valid url", c.Server)
 	}
 
 	// verify token is provided

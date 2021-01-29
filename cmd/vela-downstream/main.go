@@ -75,7 +75,7 @@ func main() {
 			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
 			Name:     "repo.branch",
 			Usage:    "default branch to trigger builds for the repo",
-			Value:    "master",
+			Value:    "master", // CHANGE TO FIND DEFAULT
 		},
 		&cli.StringSliceFlag{
 			EnvVars:  []string{"PARAMETER_REPOS", "DOWNSTREAM_REPOS"},
@@ -132,8 +132,10 @@ func run(c *cli.Context) error {
 	p := &Plugin{
 		// config configuration
 		Config: &Config{
-			Server: c.String("config.server"),
-			Token:  c.String("config.token"),
+			Server:     c.String("config.server"),
+			Token:      c.String("config.token"),
+			AppName:    c.App.Name,
+			AppVersion: c.App.Version,
 		},
 		// repo configuration
 		Repo: &Repo{
