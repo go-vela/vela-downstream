@@ -33,7 +33,7 @@ func (s *Status) Validate() error {
 	return nil
 }
 
-// contains checks to see if a []string contains a string
+// contains checks to see if a []string contains a string.
 func contains(acceptableStatus Status, s string) bool {
 	for _, v := range acceptableStatus {
 		if strings.EqualFold(v, s) {
