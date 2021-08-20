@@ -11,6 +11,7 @@ import (
 
 	"time"
 
+	"github.com/go-vela/types/constants"
 	"github.com/go-vela/vela-downstream/version"
 
 	"github.com/sirupsen/logrus"
@@ -96,6 +97,13 @@ func main() {
 			Name:     "repo.names",
 			Usage:    "list of <org>/<repo> names to trigger",
 		},
+		&cli.StringSliceFlag{
+			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
+			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
+			Name:     "status",
+			Usage:    "status of last build to trigger - options: (error|failure|killed|canceled|pending|running|success)",
+			Value:    cli.NewStringSlice(constants.StatusSuccess),
+		},
 	}
 
 	err = app.Run(os.Args)
@@ -146,6 +154,7 @@ func run(c *cli.Context) error {
 			Branch: c.String("repo.branch"),
 			Names:  c.StringSlice("repo.names"),
 		},
+		Status: &Status{"status"},
 	}
 
 	// validate the plugin
