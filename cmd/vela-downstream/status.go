@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/go-vela/types/constants"
 	"github.com/sirupsen/logrus"
 )
 
@@ -13,7 +14,15 @@ type Status []string
 func (s *Status) Validate() error {
 	logrus.Trace("validating config configuration")
 
-	acceptableStatus := Status{"error", "failure", "killed", "canceled", "pending", "running", "success"}
+	acceptableStatus := Status{
+		constants.StatusError,
+		constants.StatusFailure,
+		constants.StatusKilled,
+		constants.StatusCanceled,
+		constants.StatusPending,
+		constants.StatusRunning,
+		constants.StatusSuccess,
+	}
 
 	for _, v := range *s {
 		if !contains(acceptableStatus, v) {
