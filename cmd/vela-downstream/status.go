@@ -25,8 +25,8 @@ func (s *Status) Validate() error {
 	}
 
 	for _, v := range *s {
-		if !contains(acceptableStatus, v) {
-			return fmt.Errorf("Status %s not of acceptable type %s", s, acceptableStatus)
+		if !contains(&acceptableStatus, v) {
+			return fmt.Errorf("status %s not of acceptable type %s", s, acceptableStatus)
 		}
 	}
 
@@ -34,8 +34,8 @@ func (s *Status) Validate() error {
 }
 
 // contains checks to see if a []string contains a string.
-func contains(acceptableStatus Status, s string) bool {
-	for _, v := range acceptableStatus {
+func contains(acceptableStatus *Status, s string) bool {
+	for _, v := range *acceptableStatus {
 		if strings.EqualFold(v, s) {
 			return true
 		}

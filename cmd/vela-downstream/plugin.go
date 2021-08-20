@@ -85,7 +85,7 @@ func (p *Plugin) Exec() error {
 		// iterate through list of builds for the repo
 		for _, b := range builds {
 			// check if the build branch matches and is of an acceptable status
-			if b.GetBranch() == repo.GetBranch() && contains(*p.Status, b.GetStatus()) {
+			if b.GetBranch() == repo.GetBranch() && contains(p.Status, b.GetStatus()) {
 				// update the build object to the current build
 				build = &b
 
