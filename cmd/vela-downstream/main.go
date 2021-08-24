@@ -101,7 +101,7 @@ func main() {
 			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
 			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
 			Name:     "status",
-			Usage:    "status of last build to trigger - options: (error|failure|killed|canceled|pending|running|success)",
+			Usage:    "status of last build to trigger - example: (error|failure|running|success)",
 			Value:    cli.NewStringSlice(constants.StatusSuccess),
 		},
 	}
