@@ -123,13 +123,14 @@ steps:
 
 The following parameters are used to configure the image:
 
-| Name        | Description                                      | Required | Default  | Environment Variables                           |
-| ----------- | ------------------------------------------------ | -------- | -------- | ----------------------------------------------- |
-| `branch`    | default branch to trigger a build on             | `true`   | `master` | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
-| `log_level` | set the log level for the plugin                 | `true`   | `info`   | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL` |
-| `repos`     | list of <org>/<repo> names to trigger a build on | `true`   | `N/A`    | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`         |
-| `server`    | Vela server to communicate with                  | `true`   | `N/A`    | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`       |
-| `token`     | token for communication with Vela                | `true`   | `N/A`    | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`         |
+| Name        | Description                                             | Required | Default   | Environment Variables                           |
+| ----------- | ------------------------------------------------------- | -------- | --------- | ----------------------------------------------- |
+| `branch`    | default branch to trigger a build on                    | `true`   | `master`  | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
+| `log_level` | set the log level for the plugin                        | `true`   | `info`    | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL` |
+| `repos`     | list of <org>/<repo> names to trigger a build on        | `true`   | `N/A`     | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`         |
+| `server`    | Vela server to communicate with                         | `true`   | `N/A`     | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`       |
+| `status`    | list of acceptable build statuses to trigger a build on | `true`   | `success` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`       |
+| `token`     | token for communication with Vela                       | `true`   | `N/A`     | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`         |
 
 ## Template
 
