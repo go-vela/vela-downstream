@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/go-vela/sdk-go/vela"
-	"github.com/go-vela/types/constants"
 	"github.com/go-vela/types/library"
 
 	"github.com/sirupsen/logrus"
@@ -20,6 +19,8 @@ type Plugin struct {
 	Config *Config
 	// repo arguments loaded for the plugin
 	Repo *Repo
+	// list of acceptable Vela build statuses to trigger a build for
+	Status *Status
 }
 
 // Exec formats and runs the commands for triggering builds in Vela.
@@ -41,7 +42,7 @@ func (p *Plugin) Exec() error {
 	// iterate through each repo from provided configuration
 	for _, repo := range repos {
 		// create new build type to store last successful build
-		build := new(library.Build)
+		build := library.Build{}
 
 		logrus.Infof("Listing last 500 builds for %s", repo.GetFullName())
 
@@ -79,14 +80,17 @@ func (p *Plugin) Exec() error {
 			opts.Page = resp.NextPage
 		}
 
-		logrus.Debugf("Searching for latest successful build with branch %s", repo.GetBranch())
+		logrus.Debugf("Searching for latest build on branch %s with status %s",
+			repo.GetBranch(),
+			p.Status,
+		)
 
 		// iterate through list of builds for the repo
 		for _, b := range builds {
-			// check if the build branch matches and was successful
-			if b.GetBranch() == repo.GetBranch() && b.GetStatus() == constants.StatusSuccess {
+			// check if the build branch matches and is of an acceptable status
+			if b.GetBranch() == repo.GetBranch() && contains(p.Status, b.GetStatus()) {
 				// update the build object to the current build
-				build = &b
+				build = b
 
 				// break out of the loop
 				break
@@ -95,7 +99,11 @@ func (p *Plugin) Exec() error {
 
 		// check if we found a build to restart
 		if build.GetNumber() == 0 {
-			return fmt.Errorf("no successful build with branch %s found for %s", repo.GetBranch(), repo.GetFullName())
+			return fmt.Errorf("no build with status %s on branch %s found for %s",
+				p.Status,
+				repo.GetBranch(),
+				repo.GetFullName(),
+			)
 		}
 
 		logrus.Infof("Restarting build %s/%d", repo.GetFullName(), build.GetNumber())
@@ -124,6 +132,11 @@ func (p *Plugin) Validate() error {
 
 	// validate repo configuration
 	err = p.Repo.Validate()
+	if err != nil {
+		return err
+	}
+
+	err = p.Status.Validate()
 	if err != nil {
 		return err
 	}
