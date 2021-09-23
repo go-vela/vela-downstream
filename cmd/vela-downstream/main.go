@@ -67,6 +67,30 @@ func main() {
 			Value:    "info",
 		},
 
+		// Build Flags
+
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_BRANCH", "DOWNSTREAM_BRANCH"},
+			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
+			Name:     "build.branch",
+			Usage:    "branch to trigger a build for the repo",
+			Value:    "master",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_EVENT", "DOWNSTREAM_EVENT"},
+			FilePath: "/vela/parameters/downstream/event,/vela/secrets/downstream/event",
+			Name:     "build.event",
+			Usage:    "event to trigger a build for the repo",
+			Value:    constants.EventPush,
+		},
+		&cli.StringSliceFlag{
+			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
+			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
+			Name:     "build.status",
+			Usage:    "list of statuses to trigger a build for the repo - example: (error|failure|running|success)",
+			Value:    cli.NewStringSlice(constants.StatusSuccess),
+		},
+
 		// Config Flags
 
 		&cli.StringFlag{
@@ -84,25 +108,11 @@ func main() {
 
 		// Repo Flags
 
-		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BRANCH", "DOWNSTREAM_BRANCH"},
-			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
-			Name:     "repo.branch",
-			Usage:    "default branch to trigger builds for the repo",
-			Value:    "master",
-		},
 		&cli.StringSliceFlag{
 			EnvVars:  []string{"PARAMETER_REPOS", "DOWNSTREAM_REPOS"},
 			FilePath: "/vela/parameters/downstream/repos,/vela/secrets/downstream/repos",
 			Name:     "repo.names",
 			Usage:    "list of <org>/<repo> names to trigger",
-		},
-		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
-			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
-			Name:     "status",
-			Usage:    "status of last build to trigger - example: (error|failure|running|success)",
-			Value:    cli.NewStringSlice(constants.StatusSuccess),
 		},
 	}
 
@@ -142,6 +152,12 @@ func run(c *cli.Context) error {
 
 	// create the plugin
 	p := &Plugin{
+		// build configuration
+		Build: &Build{
+			Branch: c.String("build.branch"),
+			Event:  c.String("build.event"),
+			Status: c.StringSlice("build.status"),
+		},
 		// config configuration
 		Config: &Config{
 			Server:     c.String("config.server"),
@@ -151,10 +167,8 @@ func run(c *cli.Context) error {
 		},
 		// repo configuration
 		Repo: &Repo{
-			Branch: c.String("repo.branch"),
-			Names:  c.StringSlice("repo.names"),
+			Names: c.StringSlice("repo.names"),
 		},
-		Status: &Status{"status"},
 	}
 
 	// validate the plugin

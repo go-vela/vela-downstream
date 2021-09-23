@@ -15,12 +15,12 @@ import (
 
 // Plugin represents the configuration loaded for the plugin.
 type Plugin struct {
+	// build arguments loaded for the plugin
+	Build *Build
 	// config arguments loaded for the plugin
 	Config *Config
 	// repo arguments loaded for the plugin
 	Repo *Repo
-	// list of acceptable Vela build statuses to trigger a build for
-	Status *Status
 }
 
 // Exec formats and runs the commands for triggering builds in Vela.
@@ -34,7 +34,7 @@ func (p *Plugin) Exec() error {
 	}
 
 	// parse list of repos to trigger builds on
-	repos, err := p.Repo.Parse()
+	repos, err := p.Repo.Parse(p.Build.Branch)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (p *Plugin) Exec() error {
 		// create new build type to store last successful build
 		build := library.Build{}
 
-		logrus.Infof("Listing last 500 builds for %s", repo.GetFullName())
+		logrus.Infof("listing last 500 builds for %s", repo.GetFullName())
 
 		// create options for listing builds
 		opts := &vela.ListOptions{
@@ -80,15 +80,18 @@ func (p *Plugin) Exec() error {
 			opts.Page = resp.NextPage
 		}
 
-		logrus.Debugf("Searching for latest build on branch %s with status %s",
+		logrus.Debugf("searching for latest %s build on branch %s with status %s",
+			p.Build.Event,
 			repo.GetBranch(),
-			p.Status,
+			p.Build.Status,
 		)
 
 		// iterate through list of builds for the repo
 		for _, b := range builds {
-			// check if the build branch matches and is of an acceptable status
-			if b.GetBranch() == repo.GetBranch() && contains(p.Status, b.GetStatus()) {
+			// check if the build branch, event and status match
+			if b.GetBranch() == repo.GetBranch() &&
+				b.GetEvent() == p.Build.Event &&
+				contains(p.Build.Status, b.GetStatus()) {
 				// update the build object to the current build
 				build = b
 
@@ -99,9 +102,10 @@ func (p *Plugin) Exec() error {
 
 		// check if we found a build to restart
 		if build.GetNumber() == 0 {
-			return fmt.Errorf("no build with status %s on branch %s found for %s",
-				p.Status,
+			return fmt.Errorf("no %s build on branch %s with status %s found for %s",
+				p.Build.Event,
 				repo.GetBranch(),
+				p.Build.Status,
 				repo.GetFullName(),
 			)
 		}
@@ -124,19 +128,20 @@ func (p *Plugin) Exec() error {
 func (p *Plugin) Validate() error {
 	logrus.Debug("validating plugin configuration")
 
+	// validate build configuration
+	err := p.Build.Validate()
+	if err != nil {
+		return err
+	}
+
 	// validate config configuration
-	err := p.Config.Validate()
+	err = p.Config.Validate()
 	if err != nil {
 		return err
 	}
 
 	// validate repo configuration
 	err = p.Repo.Validate()
-	if err != nil {
-		return err
-	}
-
-	err = p.Status.Validate()
 	if err != nil {
 		return err
 	}
