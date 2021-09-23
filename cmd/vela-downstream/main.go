@@ -87,7 +87,7 @@ func main() {
 			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
 			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
 			Name:     "build.status",
-			Usage:    "list of statuses to trigger a build for the repo - example: (error|failure|running|success)",
+			Usage:    "list of statuses to trigger a build for the repo",
 			Value:    cli.NewStringSlice(constants.StatusSuccess),
 		},
 
