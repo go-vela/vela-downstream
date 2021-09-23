@@ -243,5 +243,7 @@ docker-run:
 		-e DOWNSTREAM_TOKEN \
 		-e PARAMETER_LOG_LEVEL \
 		-e PARAMETER_BRANCH \
+		-e PARAMETER_EVENT \
 		-e PARAMETER_REPOS \
+		-e PARAMETER_STATUS \
 		vela-downstream:local
