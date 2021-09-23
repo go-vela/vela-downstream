@@ -22,10 +22,57 @@ steps:
     image: target/vela-downstream:latest
     pull: always
     parameters:
-      branch: master
       repos:
         - octocat/hello-world
       server: https://vela-server.localhost
+```
+
+Sample of triggering a downstream build for a specific branch:
+
+```diff
+steps:
+  - name: trigger_hello-world
+    image: target/vela-downstream:latest
+    pull: always
+    parameters:
++     branch: main
+      repos:
+        - octocat/hello-world
+      server: https://vela-server.localhost
+```
+
+Sample of triggering a downstream build for a specific event:
+
+```diff
+steps:
+  - name: trigger_hello-world
+    image: target/vela-downstream:latest
+    pull: always
+    parameters:
++     event: tag
+      repos:
+        - octocat/hello-world
+      server: https://vela-server.localhost
+```
+
+Sample of triggering a downstream build for a specific status:
+
+> **NOTE:**
+>
+> You can provide a list of statuses to the plugin.
+>
+> The first build found matching either of the statuses will be triggered.
+
+```diff
+steps:
+  - name: trigger_hello-world
+    image: target/vela-downstream:latest
+    pull: always
+    parameters:
+      repos:
+        - octocat/hello-world
+      server: https://vela-server.localhost
++     status: [ success, failure ]
 ```
 
 Sample of triggering a downstream build for multiple repos:
@@ -36,7 +83,6 @@ steps:
     image: target/vela-downstream:latest
     pull: always
     parameters:
-      branch: master
       repos:
         - octocat/hello-world
 +       - go-vela/hello-world
@@ -45,7 +91,11 @@ steps:
 
 Sample of triggering a downstream build for multiple repos with different branches:
 
-> **NOTE:** Use the @ symbol at the end of the org/repo to provide a unique branch per repo.
+> **NOTE:**
+>
+> Use the @ symbol at the end of the org/repo to provide a unique branch per repo.
+>
+> This will override the value set for the `branch` parameter.
 
 ```diff
 steps:
@@ -53,7 +103,6 @@ steps:
     image: target/vela-downstream:latest
     pull: always
     parameters:
--     branch: master
       repos:
 -       - octocat/hello-world
 +       - octocat/hello-world@test
@@ -77,7 +126,6 @@ steps:
     pull: always
 +   secrets: [ downstream_token ]
     parameters:
-      branch: master
       repos:
         - octocat/hello-world
       server: https://vela-server.localhost
@@ -104,7 +152,6 @@ steps:
     image: target/vela-downstream:latest
     pull: always
     parameters:
-      branch: master
       repos:
         - octocat/hello-world
       server: https://vela-server.localhost
@@ -123,14 +170,15 @@ steps:
 
 The following parameters are used to configure the image:
 
-| Name        | Description                                             | Required | Default   | Environment Variables                           |
-| ----------- | ------------------------------------------------------- | -------- | --------- | ----------------------------------------------- |
-| `branch`    | default branch to trigger a build on                    | `true`   | `master`  | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
-| `log_level` | set the log level for the plugin                        | `true`   | `info`    | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL` |
-| `repos`     | list of <org>/<repo> names to trigger a build on        | `true`   | `N/A`     | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`         |
-| `server`    | Vela server to communicate with                         | `true`   | `N/A`     | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`       |
-| `status`    | list of acceptable build statuses to trigger a build on | `true`   | `success` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`       |
-| `token`     | token for communication with Vela                       | `true`   | `N/A`     | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`         |
+| Name        | Description                                      | Required | Default       | Environment Variables                           |
+| ----------- | ------------------------------------------------ | -------- | ------------- | ----------------------------------------------- |
+| `branch`    | branch to trigger a build on                     | `true`   | `master`      | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
+| `event`     | event to trigger a build on                      | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`         |
+| `log_level` | set the log level for the plugin                 | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL` |
+| `repos`     | list of <org>/<repo> names to trigger a build on | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`         |
+| `server`    | Vela server to communicate with                  | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`       |
+| `status`    | list of statuses to trigger a build on           | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`       |
+| `token`     | token for communication with Vela                | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`         |
 
 ## Template
 
@@ -146,7 +194,6 @@ steps:
     image: target/vela-downstream:latest
     pull: always
     parameters:
-      branch: master
 +     log_level: trace
       repos:
         - octocat/hello-world
