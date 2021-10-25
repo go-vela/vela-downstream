@@ -24,6 +24,8 @@ type Plugin struct {
 }
 
 // Exec formats and runs the commands for triggering builds in Vela.
+//
+// nolint: funlen // ignore function length due to comments
 func (p *Plugin) Exec() error {
 	logrus.Debug("running plugin with provided configuration")
 
@@ -47,11 +49,16 @@ func (p *Plugin) Exec() error {
 		logrus.Infof("listing last 500 builds for %s", repo.GetFullName())
 
 		// create options for listing builds
-		opts := &vela.ListOptions{
-			// set the default starting page for options
-			Page: 1,
-			// set the max per page for options
-			PerPage: 100,
+		//
+		// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildListOptions
+		opts := &vela.BuildListOptions{
+			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#ListOptions
+			ListOptions: vela.ListOptions{
+				// set the default starting page for options
+				Page: 1,
+				// set the max per page for options
+				PerPage: 100,
+			},
 		}
 
 		// create new slice of builds to store API results
@@ -60,6 +67,8 @@ func (p *Plugin) Exec() error {
 		// loop to capture *ALL* the builds
 		for {
 			// send API call to capture a list of builds for the repo
+			//
+			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.GetAll
 			b, resp, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), opts)
 			if err != nil {
 				return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
@@ -77,7 +86,7 @@ func (p *Plugin) Exec() error {
 
 			// update the options for listing builds
 			// to point at the next page
-			opts.Page = resp.NextPage
+			opts.ListOptions.Page = resp.NextPage
 		}
 
 		logrus.Debugf("searching for latest %s build on branch %s with status %s",
@@ -110,15 +119,17 @@ func (p *Plugin) Exec() error {
 			)
 		}
 
-		logrus.Infof("Restarting build %s/%d", repo.GetFullName(), build.GetNumber())
+		logrus.Infof("restarting build %s/%d", repo.GetFullName(), build.GetNumber())
 
 		// send API call to restart the latest build for the repo
+		//
+		// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.Restart
 		b, _, err := client.Build.Restart(repo.GetOrg(), repo.GetName(), build.GetNumber())
 		if err != nil {
 			return fmt.Errorf("unable to restart build %s/%d", repo.GetFullName(), build.GetNumber())
 		}
 
-		logrus.Infof("New build created %s/%d", repo.GetFullName(), b.GetNumber())
+		logrus.Infof("new build created %s/%d", repo.GetFullName(), b.GetNumber())
 	}
 
 	return nil
