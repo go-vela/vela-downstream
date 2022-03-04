@@ -24,8 +24,6 @@ type Plugin struct {
 }
 
 // Exec formats and runs the commands for triggering builds in Vela.
-//
-// nolint: funlen // ignore function length due to comments
 func (p *Plugin) Exec() error {
 	logrus.Debug("running plugin with provided configuration")
 
