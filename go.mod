@@ -8,10 +8,11 @@ require (
 	github.com/go-vela/types v0.13.0
 	github.com/joho/godotenv v1.4.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/urfave/cli/v2 v2.6.0
+	github.com/urfave/cli/v2 v2.7.1
 )
 
 require (
+	github.com/antzucaro/matchr v0.0.0-20210222213004-b04723ef80f0 // indirect
 	github.com/buildkite/yaml v0.0.0-20181016232759-0caa5f0796e3 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
