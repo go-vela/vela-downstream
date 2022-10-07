@@ -22,8 +22,8 @@ github.com/go-playground/validator/v10 v10.10.0 h1:I7mrTYv78z8k8VXa/qJlOlEXn/nBh
 github.com/go-vela/sdk-go v0.14.0 h1:JWQnGNsnlEiWh77cTY+YSgvKUGxliE0oWWQYAKysF6s=
 github.com/go-vela/sdk-go v0.14.0/go.mod h1:xrl/pF9k6Xzu+fchm7SrJJPdqgVCTLQBdB+L/lyCfjg=
 github.com/go-vela/server v0.14.0 h1:G0Ble5hZ904DFPWYN6Nl9m73hZT6hw+41+eq/n1o0NQ=
-github.com/go-vela/types v0.14.0 h1:m75BdRfQm9PC4l/oHSgeplt8mqgau3JmqD3DN+KdePk=
-github.com/go-vela/types v0.14.0/go.mod h1:Z/94BulwLbd+bSiPVJEUNdQxB1EP2JCYWaBsv/d65vs=
+github.com/go-vela/types v0.15.1 h1:nQxfxoqxavuTYtvFJW4wK9UkkADN2VG6Z4ubvJ8PT1s=
+github.com/go-vela/types v0.15.1/go.mod h1:6KoRkvXMw9DkAcLdtI7PxPqMlT2Bl0DiigQamLGGjwo=
 github.com/goccy/go-json v0.9.7 h1:IcB+Aqpx/iMHu5Yooh7jEzJk1JZ7Pjtmys2ukPr7EeM=
 github.com/golang-jwt/jwt/v4 v4.4.1 h1:pC5DB52sCeK48Wlb9oPcdhnjkz1TKt1D/P7WKJ0kUcQ=
 github.com/golang-jwt/jwt/v4 v4.4.1/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
@@ -68,7 +68,7 @@ github.com/urfave/cli/v2 v2.17.1/go.mod h1:1CNUng3PtjQMtRzJO4FMXBQvkGtuYRxxiR9xM
 github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 h1:bAn7/zixMGCfxrRTfdpNzjtPYqr8smhKouy9mxVdGPU=
 github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673/go.mod h1:N3UwUGtsrSj3ccvlPHLoLsHnpR27oXr4ZE984MbSER8=
 golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa h1:idItI2DDfCokpg0N51B2VtiLdJ4vAuXC9fnCb2gACo4=
-golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd h1:O7DYs+zxREGLKzKoMQrtrEacpb0ZVXA5rIwylE2Xchk=
+golang.org/x/net v0.0.0-20221002022538-bcab6841153b h1:6e93nYa3hNqAvLr0pD4PN1fFS+gKzp2zAXqrnTCstqU=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 h1:0A+M6Uqn+Eje4kHMK80dtF3JCXC4ykBgQG4Fe06QRhQ=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
