@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: golang:1.20
+      image: golang:1.20@sha256:bc5f0b5e43282627279fe5262ae275fecb3d2eae3b33977a7fd200c7a760d6f1
     steps:
     - name: clone
       uses: actions/checkout@v3
