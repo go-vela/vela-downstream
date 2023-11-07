@@ -4,6 +4,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	"github.com/go-vela/types/constants"
 )
@@ -32,8 +33,8 @@ func TestDownstream_Build_Validate_NoBranch(t *testing.T) {
 
 	// run test
 	err := b.Validate()
-	if err == nil {
-		t.Errorf("Validate should have returned err")
+	if err != nil {
+		t.Errorf("Validate should not have returned err")
 	}
 }
 
@@ -92,5 +93,24 @@ func TestDownstream_Build_Validate_InvalidStatus(t *testing.T) {
 	err := b.Validate()
 	if err == nil {
 		t.Errorf("Validate should have returned err")
+	}
+}
+
+func TestDownstream_Build_Validate_HighTimeout(t *testing.T) {
+	// setup types
+	b := &Build{
+		Branch:  "master",
+		Event:   constants.EventPush,
+		Status:  []string{"success"},
+		Timeout: 120 * time.Minute,
+	}
+
+	err := b.Validate()
+	if err != nil {
+		t.Errorf("Validate returned an error")
+	}
+
+	if b.Timeout != (90 * time.Minute) {
+		t.Errorf("Validate should have a timeout of max 90 minutes")
 	}
 }

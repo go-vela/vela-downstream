@@ -4,8 +4,11 @@ package main
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/go-vela/sdk-go/vela"
+	"github.com/go-vela/types/constants"
 	"github.com/go-vela/types/library"
 
 	"github.com/sirupsen/logrus"
@@ -31,6 +34,8 @@ func (p *Plugin) Exec() error {
 		return err
 	}
 
+	rBMap := make(map[*library.Repo]int)
+
 	// parse list of repos to trigger builds on
 	repos, err := p.Repo.Parse(p.Build.Branch)
 	if err != nil {
@@ -48,6 +53,8 @@ func (p *Plugin) Exec() error {
 		//
 		// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildListOptions
 		opts := &vela.BuildListOptions{
+			Branch: repo.GetBranch(),
+			Event:  p.Build.Event,
 			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#ListOptions
 			ListOptions: vela.ListOptions{
 				// set the default starting page for options
@@ -94,9 +101,7 @@ func (p *Plugin) Exec() error {
 		// iterate through list of builds for the repo
 		for _, b := range builds {
 			// check if the build branch, event and status match
-			if b.GetBranch() == repo.GetBranch() &&
-				b.GetEvent() == p.Build.Event &&
-				contains(p.Build.Status, b.GetStatus()) {
+			if contains(p.Build.Status, b.GetStatus()) {
 				// update the build object to the current build
 				build = b
 
@@ -107,12 +112,20 @@ func (p *Plugin) Exec() error {
 
 		// check if we found a build to restart
 		if build.GetNumber() == 0 {
-			return fmt.Errorf("no %s build on branch %s with status %s found for %s",
+			msg := fmt.Sprintf("no %s build on branch %s with status %s found for %s",
 				p.Build.Event,
 				repo.GetBranch(),
 				p.Build.Status,
 				repo.GetFullName(),
 			)
+
+			if p.Build.Continue {
+				logrus.Warn(msg)
+
+				continue
+			}
+
+			return fmt.Errorf(msg)
 		}
 
 		logrus.Infof("restarting build %s/%d", repo.GetFullName(), build.GetNumber())
@@ -125,10 +138,70 @@ func (p *Plugin) Exec() error {
 			return fmt.Errorf("unable to restart build %s/%d", repo.GetFullName(), build.GetNumber())
 		}
 
+		// set map value for status checking
+		rBMap[repo] = b.GetNumber()
+
 		logrus.Infof("new build created %s/%d", repo.GetFullName(), b.GetNumber())
 	}
 
+	// early exit if reporting back is not enabled
+	if !p.Build.Report || len(rBMap) == 0 {
+		return nil
+	}
+
+	err = p.Report(client, rBMap)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+// Report is a plugin method that checks the build statuses of all the builds kicked off from the plugin.
+// It will continue to check the statuses on 30 second intervals until the timeout is reached.
+func (p *Plugin) Report(client *vela.Client, rBMap map[*library.Repo]int) error {
+	logrus.Info("waiting for 30 seconds to check status of downstream builds...")
+	// sleep to allow for all restart processing
+	time.Sleep(30 * time.Second)
+
+	// set timeout
+	timeout := time.Now().Add(p.Build.Timeout).Unix()
+
+	successMap := make(map[int]bool)
+
+	for time.Now().Unix() < timeout {
+		logrus.Debug("checking build statuses of downstream builds...")
+
+		for r, num := range rBMap {
+			if successMap[num] {
+				continue
+			}
+
+			build, _, err := client.Build.Get(r.GetOrg(), r.GetName(), num)
+			if err != nil {
+				return fmt.Errorf("unable to get build %s/%d: %w", r.GetFullName(), num, err)
+			}
+
+			if contains(p.Build.TargetStatus, build.GetStatus()) {
+				successMap[num] = true
+			} else if strings.EqualFold(build.GetStatus(), constants.StatusRunning) || strings.EqualFold(build.GetStatus(), constants.StatusPending) {
+				continue
+			} else {
+				return fmt.Errorf("triggered build %s/%d returned %s status, exiting", r.GetFullName(), num, build.GetStatus())
+			}
+		}
+
+		if len(successMap) == len(rBMap) {
+			logrus.Info("all builds matched desired status")
+			return nil
+		}
+
+		logrus.Info("sleeping for 30 seconds to check build statuses...")
+
+		time.Sleep(30 * time.Second)
+	}
+
+	return fmt.Errorf("timeout while awaiting downstream build statuses")
 }
 
 // Validate verifies the plugin is properly configured.
