@@ -4,6 +4,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	"github.com/go-vela/types/constants"
 )
@@ -11,7 +12,7 @@ import (
 func TestDownstream_Build_Validate(t *testing.T) {
 	// setup types
 	b := &Build{
-		Branch: "master",
+		Branch: "main",
 		Event:  constants.EventPush,
 		Status: []string{constants.StatusSuccess},
 	}
@@ -32,15 +33,15 @@ func TestDownstream_Build_Validate_NoBranch(t *testing.T) {
 
 	// run test
 	err := b.Validate()
-	if err == nil {
-		t.Errorf("Validate should have returned err")
+	if err != nil {
+		t.Errorf("Validate should not have returned err")
 	}
 }
 
 func TestDownstream_Build_Validate_NoEvent(t *testing.T) {
 	// setup types
 	b := &Build{
-		Branch: "master",
+		Branch: "main",
 		Status: []string{constants.StatusSuccess},
 	}
 
@@ -54,7 +55,7 @@ func TestDownstream_Build_Validate_NoEvent(t *testing.T) {
 func TestDownstream_Build_Validate_NoStatus(t *testing.T) {
 	// setup types
 	b := &Build{
-		Branch: "master",
+		Branch: "main",
 		Event:  constants.EventPush,
 	}
 
@@ -68,7 +69,7 @@ func TestDownstream_Build_Validate_NoStatus(t *testing.T) {
 func TestDownstream_Build_Validate_InvalidEvent(t *testing.T) {
 	// setup types
 	b := &Build{
-		Branch: "master",
+		Branch: "main",
 		Event:  "foo",
 		Status: []string{constants.StatusSuccess},
 	}
@@ -83,7 +84,7 @@ func TestDownstream_Build_Validate_InvalidEvent(t *testing.T) {
 func TestDownstream_Build_Validate_InvalidStatus(t *testing.T) {
 	// setup types
 	b := &Build{
-		Branch: "master",
+		Branch: "main",
 		Event:  constants.EventPush,
 		Status: []string{"foo"},
 	}
@@ -92,5 +93,24 @@ func TestDownstream_Build_Validate_InvalidStatus(t *testing.T) {
 	err := b.Validate()
 	if err == nil {
 		t.Errorf("Validate should have returned err")
+	}
+}
+
+func TestDownstream_Build_Validate_HighTimeout(t *testing.T) {
+	// setup types
+	b := &Build{
+		Branch:  "main",
+		Event:   constants.EventPush,
+		Status:  []string{"success"},
+		Timeout: 120 * time.Minute,
+	}
+
+	err := b.Validate()
+	if err != nil {
+		t.Errorf("Validate returned an error")
+	}
+
+	if b.Timeout != (90 * time.Minute) {
+		t.Errorf("Validate should have a timeout of max 90 minutes")
 	}
 }

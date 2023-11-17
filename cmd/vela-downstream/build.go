@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-vela/types/constants"
 	"github.com/sirupsen/logrus"
@@ -18,6 +19,14 @@ type Build struct {
 	Event string
 	// status to trigger a build for the repo
 	Status []string
+	// report determines whether to report back the build statuses
+	Report bool
+	// target status for triggered builds
+	TargetStatus []string
+	// timeout for waiting on triggered builds
+	Timeout time.Duration
+	// continue through repo list if build is not found to restart
+	Continue bool
 }
 
 // Validate verifies the Build is properly configured.
@@ -26,12 +35,19 @@ func (b *Build) Validate() error {
 
 	// verify build branch is provided
 	if len(b.Branch) == 0 {
-		return fmt.Errorf("no build branch provided")
+		logrus.Debug("no build branch provided for filtering")
 	}
 
 	// verify build event is provided
 	if len(b.Event) == 0 {
 		return fmt.Errorf("no build event provided")
+	}
+
+	// set timeout
+	if b.Timeout > (90 * time.Minute) {
+		logrus.Info("timeout set too high. Using 90 minutes...")
+
+		b.Timeout = 90 * time.Minute
 	}
 
 	// create a list of valid events for a build
@@ -40,6 +56,7 @@ func (b *Build) Validate() error {
 		constants.EventDeploy,
 		constants.EventPull,
 		constants.EventPush,
+		"schedule",
 		constants.EventTag,
 	}
 

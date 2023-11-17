@@ -72,7 +72,6 @@ func main() {
 			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
 			Name:     "build.branch",
 			Usage:    "branch to trigger a build for the repo",
-			Value:    "master",
 		},
 		&cli.StringFlag{
 			EnvVars:  []string{"PARAMETER_EVENT", "DOWNSTREAM_EVENT"},
@@ -86,6 +85,35 @@ func main() {
 			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
 			Name:     "build.status",
 			Usage:    "list of statuses to trigger a build for the repo",
+			Value:    cli.NewStringSlice(constants.StatusSuccess),
+		},
+		&cli.BoolFlag{
+			EnvVars:  []string{"PARAMETER_CONTINUE_ON_NOT_FOUND", "DOWNSTREAM_CONTINUE_ON_NOT_FOUND"},
+			FilePath: "/vela/parameters/downstream/report_back,/vela/secrets/downstream/report_back",
+			Name:     "build.continue",
+			Usage:    "determine whether the downstream plugin should continue through repo list if a build is not found to restart",
+		},
+
+		// Build Check Flags
+
+		&cli.BoolFlag{
+			EnvVars:  []string{"PARAMETER_REPORT_BACK", "DOWNSTREAM_REPORT_BACK"},
+			FilePath: "/vela/parameters/downstream/report_back,/vela/secrets/downstream/report_back",
+			Name:     "build-check.enabled",
+			Usage:    "determine whether the downstream plugin should wait for its triggered builds and report their statuses",
+		},
+		&cli.DurationFlag{
+			EnvVars:  []string{"PARAMETER_TIMEOUT", "DOWNSTREAM_TIMEOUT"},
+			FilePath: "/vela/parameters/downstream/timeout,/vela/secrets/downstream/timeout",
+			Name:     "build-check.timeout",
+			Usage:    "timeout for checking on triggered build statuses",
+			Value:    30 * time.Minute,
+		},
+		&cli.StringSliceFlag{
+			EnvVars:  []string{"PARAMETER_TARGET_STATUS", "DOWNSTREAM_TARGET_STATUS"},
+			FilePath: "/vela/parameters/downstream/target_status,/vela/secrets/downstream/target_status",
+			Name:     "build-check.status",
+			Usage:    "list of statuses that constitute a successful triggered build",
 			Value:    cli.NewStringSlice(constants.StatusSuccess),
 		},
 
@@ -152,9 +180,13 @@ func run(c *cli.Context) error {
 	p := &Plugin{
 		// build configuration
 		Build: &Build{
-			Branch: c.String("build.branch"),
-			Event:  c.String("build.event"),
-			Status: c.StringSlice("build.status"),
+			Branch:       c.String("build.branch"),
+			Event:        c.String("build.event"),
+			Status:       c.StringSlice("build.status"),
+			Report:       c.Bool("build-check.enabled"),
+			TargetStatus: c.StringSlice("build-check.status"),
+			Timeout:      c.Duration("build-check.timeout"),
+			Continue:     c.Bool("build.continue"),
 		},
 		// config configuration
 		Config: &Config{
