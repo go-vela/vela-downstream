@@ -172,6 +172,7 @@ The following parameters are used to configure the image:
 
 | Name                    | Description                                           | Required | Default       | Environment Variables                                 |
 | ----------------------- | ---------------------------------------------------- | -------- | ------------- | ---------------------------------------------------- |
+| `branch`                | branch to trigger a build on                          | `false`  | `N/A`         | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
 | `event`                 | event to trigger a build on                           | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`               |
 | `log_level`             | set the log level for the plugin                      | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL`       |
 | `repos`                 | list of <org>/<repo> names to trigger a build on      | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`               |
