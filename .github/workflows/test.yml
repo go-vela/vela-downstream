@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: golang:1.20
+      image: golang:1.21@sha256:57bf74a970b68b10fe005f17f550554406d9b696d10b29f1a4bdc8cae37fd063
     steps:
     - name: clone
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -21,7 +21,7 @@ jobs:
         go test -race -covermode=atomic -coverprofile=coverage.out ./...
 
     - name: coverage
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.out
