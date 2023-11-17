@@ -10,11 +10,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-      image: golang:1.21@sha256:57bf74a970b68b10fe005f17f550554406d9b696d10b29f1a4bdc8cae37fd063
+
     steps:
     - name: clone
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+    - name: install go
+      uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
+      with:
+        # use version from go.mod file
+        go-version-file: 'go.mod'
+        cache: true
+        check-latest: true
 
     - name: test
       run: |
