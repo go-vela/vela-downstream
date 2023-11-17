@@ -170,15 +170,18 @@ steps:
 
 The following parameters are used to configure the image:
 
-| Name        | Description                                      | Required | Default       | Environment Variables                           |
-| ----------- | ------------------------------------------------ | -------- | ------------- | ----------------------------------------------- |
-| `branch`    | branch to trigger a build on                     | `true`   | `master`      | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
-| `event`     | event to trigger a build on                      | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`         |
-| `log_level` | set the log level for the plugin                 | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL` |
-| `repos`     | list of <org>/<repo> names to trigger a build on | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`         |
-| `server`    | Vela server to communicate with                  | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`       |
-| `status`    | list of statuses to trigger a build on           | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`       |
-| `token`     | token for communication with Vela                | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`         |
+| Name                    | Description                                           | Required | Default       | Environment Variables                                 |
+| ----------------------- | ---------------------------------------------------- | -------- | ------------- | ---------------------------------------------------- |
+| `event`                 | event to trigger a build on                           | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`               |
+| `log_level`             | set the log level for the plugin                      | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL`       |
+| `repos`                 | list of <org>/<repo> names to trigger a build on      | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`               |
+| `server`                | Vela server to communicate with                       | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`             |
+| `status`                | list of statuses to trigger a build on                | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`             |
+| `token`                 | token for communication with Vela                     | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`               |
+| `report_back`           | whether or not to track downstream build status       | `false`  | `false`       | `PARAMETER_REPORT_BACK`<br>`DOWNSTREAM_REPORT_BACK`   |
+| `target_status`         | list of statuses to look for from downstream builds   | `false`  | `[ success ]` | `PARAMETER_TARGET_STATUS`<br>`DOWNSTREAM_TARGET_STATUS` |
+| `timeout`               | how long should the plugin wait for downstream builds | `false`  | `30m`         | `PARAMETER_TIMEOUT`<br>`DOWNSTREAM_TIMEOUT`             |
+| `continue_on_not_found` | continue triggering builds on failure to find one     | `false`  | `false`       | `PARAMETER_CONTINUE_ON_NOT_FOUND`<br>`DOWNSTREAM_CONTINUE_ON_NOT_FOUND` |
 
 ## Template
 

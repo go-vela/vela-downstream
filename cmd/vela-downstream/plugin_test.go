@@ -12,7 +12,7 @@ func TestDownstream_Plugin_Exec_Error(t *testing.T) {
 	// setup types
 	p := &Plugin{
 		Build: &Build{
-			Branch: "master",
+			Branch: "main",
 			Event:  constants.EventPush,
 			Status: []string{constants.StatusSuccess},
 		},
@@ -21,7 +21,7 @@ func TestDownstream_Plugin_Exec_Error(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Names: []string{"go-vela/hello-world@main"},
 		},
 	}
 
@@ -35,7 +35,7 @@ func TestDownstream_Plugin_Validate(t *testing.T) {
 	// setup types
 	p := &Plugin{
 		Build: &Build{
-			Branch: "master",
+			Branch: "main",
 			Event:  constants.EventPush,
 			Status: []string{constants.StatusSuccess},
 		},
@@ -44,7 +44,7 @@ func TestDownstream_Plugin_Validate(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Names: []string{"go-vela/hello-world@main"},
 		},
 	}
 
@@ -63,7 +63,7 @@ func TestDownstream_Plugin_Validate_NoBuild(t *testing.T) {
 			Token:  "superSecretVelaToken",
 		},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Names: []string{"go-vela/hello-world@main"},
 		},
 	}
 
@@ -77,13 +77,13 @@ func TestDownstream_Plugin_Validate_NoConfig(t *testing.T) {
 	// setup types
 	p := &Plugin{
 		Build: &Build{
-			Branch: "master",
+			Branch: "main",
 			Event:  constants.EventPush,
 			Status: []string{constants.StatusSuccess},
 		},
 		Config: &Config{},
 		Repo: &Repo{
-			Names: []string{"go-vela/hello-world@master"},
+			Names: []string{"go-vela/hello-world@main"},
 		},
 	}
 
@@ -97,7 +97,7 @@ func TestDownstream_Plugin_Validate_NoRepo(t *testing.T) {
 	// setup types
 	p := &Plugin{
 		Build: &Build{
-			Branch: "master",
+			Branch: "main",
 			Event:  constants.EventPush,
 			Status: []string{constants.StatusSuccess},
 		},

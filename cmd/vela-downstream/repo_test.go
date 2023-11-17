@@ -25,12 +25,12 @@ func TestDownstream_Repo_Parse(t *testing.T) {
 	r2.SetOrg("go-vela")
 	r2.SetName("hello-world")
 	r2.SetFullName("go-vela/hello-world")
-	r2.SetBranch("master")
+	r2.SetBranch("main")
 
 	want := []*library.Repo{r1, r2}
 
 	// run test
-	got, err := r.Parse("master")
+	got, err := r.Parse("main")
 	if err != nil {
 		t.Errorf("Parse returned err: %v", err)
 	}
@@ -43,11 +43,11 @@ func TestDownstream_Repo_Parse(t *testing.T) {
 func TestDownstream_Repo_Parse_MultipleSlashes(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world/master"},
+		Names: []string{"go-vela/hello-world/main"},
 	}
 
 	// run test
-	got, err := r.Parse("master")
+	got, err := r.Parse("main")
 	if err == nil {
 		t.Errorf("Parse should have returned err")
 	}
@@ -60,11 +60,11 @@ func TestDownstream_Repo_Parse_MultipleSlashes(t *testing.T) {
 func TestDownstream_Repo_Parse_MultipleAtSigns(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world@master@"},
+		Names: []string{"go-vela/hello-world@main@"},
 	}
 
 	// run test
-	got, err := r.Parse("master")
+	got, err := r.Parse("main")
 	if err == nil {
 		t.Errorf("Parse should have returned err")
 	}
@@ -77,7 +77,7 @@ func TestDownstream_Repo_Parse_MultipleAtSigns(t *testing.T) {
 func TestDownstream_Repo_Validate(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world@master"},
+		Names: []string{"go-vela/hello-world@main"},
 	}
 
 	err := r.Validate()
@@ -113,7 +113,7 @@ func TestDownstream_Repo_Validate_NoSlash(t *testing.T) {
 func TestDownstream_Repo_Validate_MultipleSlashes(t *testing.T) {
 	// setup types
 	r := &Repo{
-		Names: []string{"go-vela/hello-world/master"},
+		Names: []string{"go-vela/hello-world/main"},
 	}
 
 	// run test
