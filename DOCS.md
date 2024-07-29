@@ -115,6 +115,10 @@ steps:
 
 > **NOTE:** Users should refrain from configuring sensitive information in your pipeline in plain text.
 
+A Github personal access token is required.
+The token must be tied to a user that exists in Vela, that is, the user has logged into Vela at least once.
+Additionally, the user must have write access in Github to both this repo and any repos you intend to trigger.
+
 ### Internal
 
 Users can use [Vela internal secrets](https://go-vela.github.io/docs/tour/secrets/) to substitute these sensitive values at runtime:
@@ -170,18 +174,18 @@ steps:
 
 The following parameters are used to configure the image:
 
-| Name                    | Description                                           | Required | Default       | Environment Variables                                 |
-| ----------------------- | ---------------------------------------------------- | -------- | ------------- | ---------------------------------------------------- |
-| `branch`                | branch to trigger a build on                          | `false`  | `N/A`         | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`       |
-| `event`                 | event to trigger a build on                           | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`               |
-| `log_level`             | set the log level for the plugin                      | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL`       |
-| `repos`                 | list of <org>/<repo> names to trigger a build on      | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`               |
-| `server`                | Vela server to communicate with                       | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`             |
-| `status`                | list of statuses to trigger a build on                | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`             |
-| `token`                 | token for communication with Vela                     | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`               |
-| `report_back`           | whether or not to track downstream build status       | `false`  | `false`       | `PARAMETER_REPORT_BACK`<br>`DOWNSTREAM_REPORT_BACK`   |
-| `target_status`         | list of statuses to look for from downstream builds   | `false`  | `[ success ]` | `PARAMETER_TARGET_STATUS`<br>`DOWNSTREAM_TARGET_STATUS` |
-| `timeout`               | how long should the plugin wait for downstream builds | `false`  | `30m`         | `PARAMETER_TIMEOUT`<br>`DOWNSTREAM_TIMEOUT`             |
+| Name                    | Description                                           | Required | Default       | Environment Variables                                                   |
+| ----------------------- | ----------------------------------------------------- | -------- | ------------- | ----------------------------------------------------------------------- |
+| `branch`                | branch to trigger a build on                          | `false`  | `N/A`         | `PARAMETER_BRANCH`<br>`DOWNSTREAM_BRANCH`                               |
+| `event`                 | event to trigger a build on                           | `true`   | `push`        | `PARAMETER_EVENT`<br>`DOWNSTREAM_EVENT`                                 |
+| `log_level`             | set the log level for the plugin                      | `true`   | `info`        | `PARAMETER_LOG_LEVEL`<br>`DOWNSTREAM_LOG_LEVEL`                         |
+| `repos`                 | list of <org>/<repo> names to trigger a build on      | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`                                 |
+| `server`                | Vela server to communicate with                       | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`                               |
+| `status`                | list of statuses to trigger a build on                | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`                               |
+| `token`                 | Github personal access token of an existing Vela user | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`                                 |
+| `report_back`           | whether or not to track downstream build status       | `false`  | `false`       | `PARAMETER_REPORT_BACK`<br>`DOWNSTREAM_REPORT_BACK`                     |
+| `target_status`         | list of statuses to look for from downstream builds   | `false`  | `[ success ]` | `PARAMETER_TARGET_STATUS`<br>`DOWNSTREAM_TARGET_STATUS`                 |
+| `timeout`               | how long should the plugin wait for downstream builds | `false`  | `30m`         | `PARAMETER_TIMEOUT`<br>`DOWNSTREAM_TIMEOUT`                             |
 | `continue_on_not_found` | continue triggering builds on failure to find one     | `false`  | `false`       | `PARAMETER_CONTINUE_ON_NOT_FOUND`<br>`DOWNSTREAM_CONTINUE_ON_NOT_FOUND` |
 
 ## Template
@@ -205,3 +209,14 @@ steps:
 ```
 
 Below are a list of common problems and how to solve them:
+
+### `unable to authenticate: user  not found`
+
+Vela doesn't know about the user that owns the token, even though the user exists in Github and the token may be valid.
+Log into Vela as this user once to fix the issue.
+
+### `unable to restart build myorg/myrepo/1234`
+
+Vela doesn't have permission to restart the build with the given token.
+Make sure the user that owns the token has write access to the repo that this .vela.yml is inside as well as any repos you want to trigger builds for.
+Admin access on these repos is not required.
