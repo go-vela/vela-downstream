@@ -115,9 +115,10 @@ steps:
 
 > **NOTE:** Users should refrain from configuring sensitive information in your pipeline in plain text.
 
-A Github personal access token is required.
+A personal access token for the related source control manager (GitHub, GitLab, etc.) is required.
+
 The token must be tied to a user that exists in Vela, that is, the user has logged into Vela at least once.
-Additionally, the user must have write access in Github to both this repo and any repos you intend to trigger.
+Additionally, the user must have `write` access to both the origin repo as well as any downstream repos.
 
 ### Internal
 
@@ -182,7 +183,7 @@ The following parameters are used to configure the image:
 | `repos`                 | list of <org>/<repo> names to trigger a build on      | `true`   | `N/A`         | `PARAMETER_REPOS`<br>`DOWNSTREAM_REPOS`                                 |
 | `server`                | Vela server to communicate with                       | `true`   | `N/A`         | `PARAMETER_SERVER`<br>`DOWNSTREAM_SERVER`                               |
 | `status`                | list of statuses to trigger a build on                | `true`   | `[ success ]` | `PARAMETER_STATUS`<br>`DOWNSTREAM_STATUS`                               |
-| `token`                 | Github personal access token of an existing Vela user | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`                                 |
+| `token`                 | SCM (GitHub, GitLab, etc.) personal access token of an existing Vela user | `true`   | `N/A`         | `PARAMETER_TOKEN`<br>`DOWNSTREAM_TOKEN`                                 |
 | `report_back`           | whether or not to track downstream build status       | `false`  | `false`       | `PARAMETER_REPORT_BACK`<br>`DOWNSTREAM_REPORT_BACK`                     |
 | `target_status`         | list of statuses to look for from downstream builds   | `false`  | `[ success ]` | `PARAMETER_TARGET_STATUS`<br>`DOWNSTREAM_TARGET_STATUS`                 |
 | `timeout`               | how long should the plugin wait for downstream builds | `false`  | `30m`         | `PARAMETER_TIMEOUT`<br>`DOWNSTREAM_TIMEOUT`                             |
@@ -212,11 +213,14 @@ Below are a list of common problems and how to solve them:
 
 ### `unable to authenticate: user  not found`
 
-Vela doesn't know about the user that owns the token, even though the user exists in Github and the token may be valid.
+Vela does not have a record of the user that owns the token, even if the user exists in the source control management system and the token may be valid.
+
 Log into Vela as this user once to fix the issue.
 
 ### `unable to restart build myorg/myrepo/1234`
 
-Vela doesn't have permission to restart the build with the given token.
+Vela does not have permission to restart the build with the given token.
+
 Make sure the user that owns the token has write access to the repo that this .vela.yml is inside as well as any repos you want to trigger builds for.
+
 Admin access on these repos is not required.
