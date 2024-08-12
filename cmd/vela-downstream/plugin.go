@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-vela/server/api/types"
 	"strings"
 	"time"
 
@@ -45,7 +46,7 @@ func (p *Plugin) Exec() error {
 	// iterate through each repo from provided configuration
 	for _, repo := range repos {
 		// create new build type to store last successful build
-		build := library.Build{}
+		build := types.Build{}
 
 		logrus.Infof("listing last 500 builds for %s", repo.GetFullName())
 
@@ -65,7 +66,7 @@ func (p *Plugin) Exec() error {
 		}
 
 		// create new slice of builds to store API results
-		builds := []library.Build{}
+		builds := []types.Build{}
 
 		// loop to capture *ALL* the builds
 		for {

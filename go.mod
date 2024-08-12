@@ -7,6 +7,7 @@ toolchain go1.22.6
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/go-vela/sdk-go v0.24.0
+	github.com/go-vela/server v0.24.1
 	github.com/go-vela/types v0.24.0
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3
@@ -20,7 +21,6 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/drone/envsubst v1.0.3 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-vela/server v0.24.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
