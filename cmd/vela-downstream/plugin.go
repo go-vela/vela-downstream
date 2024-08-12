@@ -4,15 +4,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-vela/server/api/types"
-	"strings"
-	"time"
 
 	"github.com/go-vela/sdk-go/vela"
+	"github.com/go-vela/server/api/types"
 	"github.com/go-vela/types/constants"
 	"github.com/go-vela/types/library"
-
 	"github.com/sirupsen/logrus"
+	"strings"
+	"time"
 )
 
 // Plugin represents the configuration loaded for the plugin.
