@@ -2,12 +2,12 @@ module github.com/go-vela/vela-downstream
 
 go 1.22.0
 
-toolchain go1.22.6
+toolchain go1.23.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/go-vela/sdk-go v0.24.0
-	github.com/go-vela/server v0.24.1
+	github.com/go-vela/server v0.24.2
 	github.com/go-vela/types v0.24.0
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3
@@ -33,7 +33,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
