@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-vela/types/library"
+	api "github.com/go-vela/server/api/types"
 )
 
 func TestDownstream_Repo_Parse(t *testing.T) {
@@ -15,19 +15,19 @@ func TestDownstream_Repo_Parse(t *testing.T) {
 		Names: []string{"go-vela/hello-world@test", "go-vela/hello-world"},
 	}
 
-	r1 := new(library.Repo)
+	r1 := new(api.Repo)
 	r1.SetOrg("go-vela")
 	r1.SetName("hello-world")
 	r1.SetFullName("go-vela/hello-world")
 	r1.SetBranch("test")
 
-	r2 := new(library.Repo)
+	r2 := new(api.Repo)
 	r2.SetOrg("go-vela")
 	r2.SetName("hello-world")
 	r2.SetFullName("go-vela/hello-world")
 	r2.SetBranch("main")
 
-	want := []*library.Repo{r1, r2}
+	want := []*api.Repo{r1, r2}
 
 	// run test
 	got, err := r.Parse("main")

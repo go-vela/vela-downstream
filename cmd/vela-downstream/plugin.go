@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/go-vela/sdk-go/vela"
-	"github.com/go-vela/server/api/types"
+	api "github.com/go-vela/server/api/types"
 	"github.com/go-vela/types/constants"
-	"github.com/go-vela/types/library"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,7 +33,7 @@ func (p *Plugin) Exec() error {
 		return err
 	}
 
-	rBMap := make(map[*library.Repo]int)
+	rBMap := make(map[*api.Repo]int)
 
 	// parse list of repos to trigger builds on
 	repos, err := p.Repo.Parse(p.Build.Branch)
@@ -45,9 +44,9 @@ func (p *Plugin) Exec() error {
 	// iterate through each repo from provided configuration
 	for _, repo := range repos {
 		// create new build type to store last successful build
-		build := types.Build{}
+		build := api.Build{}
 
-		logrus.Infof("listing last 500 builds for %s", repo.GetFullName())
+		logrus.Infof("searching last %d %s builds with branch %s for %s", p.Config.Depth, p.Build.Event, repo.GetBranch(), repo.GetFullName())
 
 		// create options for listing builds
 		//
@@ -60,54 +59,44 @@ func (p *Plugin) Exec() error {
 				// set the default starting page for options
 				Page: 1,
 				// set the max per page for options
-				PerPage: 100,
+				PerPage: 10,
 			},
 		}
-
-		// create new slice of builds to store API results
-		builds := []types.Build{}
 
 		// loop to capture *ALL* the builds
 		for {
 			// send API call to capture a list of builds for the repo
 			//
 			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.GetAll
-			b, resp, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), opts)
+			builds, resp, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), opts)
 			if err != nil {
 				return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 			}
 
-			// add the results to the list of builds
-			builds = append(builds, *b...)
+			// iterate through list of builds for the repo
+			for _, b := range *builds {
+				// check if the build branch, event and status match
+				if contains(p.Build.Status, b.GetStatus()) || contains(p.Build.Status, "any") {
+					// update the build object to the current build
+					build = b
+
+					logrus.Infof("found %s build %s/%d on branch %s with status %s", p.Build.Event, repo.GetFullName(), build.GetNumber(), repo.GetBranch(), build.GetStatus())
+
+					// break out of the loop
+					break
+				}
+			}
 
 			// break the loop if there is no more results
-			// to page through or after 5 pages of results
+			// to page through or after 50 pages of results
 			// giving us up to a total of 500 builds
-			if resp.NextPage == 0 || resp.NextPage > 5 {
+			if resp.NextPage == 0 || resp.NextPage > 50 {
 				break
 			}
 
 			// update the options for listing builds
 			// to point at the next page
 			opts.ListOptions.Page = resp.NextPage
-		}
-
-		logrus.Debugf("searching for latest %s build on branch %s with status %s",
-			p.Build.Event,
-			repo.GetBranch(),
-			p.Build.Status,
-		)
-
-		// iterate through list of builds for the repo
-		for _, b := range builds {
-			// check if the build branch, event and status match
-			if contains(p.Build.Status, b.GetStatus()) {
-				// update the build object to the current build
-				build = b
-
-				// break out of the loop
-				break
-			}
 		}
 
 		// check if we found a build to restart
@@ -135,7 +124,7 @@ func (p *Plugin) Exec() error {
 		// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.Restart
 		b, _, err := client.Build.Restart(repo.GetOrg(), repo.GetName(), build.GetNumber())
 		if err != nil {
-			return fmt.Errorf("unable to restart build %s/%d", repo.GetFullName(), build.GetNumber())
+			return fmt.Errorf("unable to restart build %s/%d: %w", repo.GetFullName(), build.GetNumber(), err)
 		}
 
 		// set map value for status checking
@@ -159,7 +148,7 @@ func (p *Plugin) Exec() error {
 
 // Report is a plugin method that checks the build statuses of all the builds kicked off from the plugin.
 // It will continue to check the statuses on 30 second intervals until the timeout is reached.
-func (p *Plugin) Report(client *vela.Client, rBMap map[*library.Repo]int) error {
+func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int) error {
 	logrus.Info("waiting for 30 seconds to check status of downstream builds...")
 	// sleep to allow for all restart processing
 	time.Sleep(30 * time.Second)

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-vela/types/library"
+	api "github.com/go-vela/server/api/types"
 
 	"github.com/sirupsen/logrus"
 )
@@ -18,17 +18,17 @@ type Repo struct {
 }
 
 // Parse verifies the Repo is properly configured.
-func (r *Repo) Parse(branch string) ([]*library.Repo, error) {
+func (r *Repo) Parse(branch string) ([]*api.Repo, error) {
 	logrus.Trace("parsing repos from provided configuration")
 
 	// create new repos type to store parsed repos
-	repos := []*library.Repo{}
+	repos := []*api.Repo{}
 
 	for _, name := range r.Names {
 		logrus.Tracef("parsing repo %s", name)
 
 		// create new repo type to store parsed repo information
-		repo := new(library.Repo)
+		repo := new(api.Repo)
 
 		// split the repo on / to account for org/repo as input
 		parts := strings.Split(name, "/")

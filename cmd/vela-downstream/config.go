@@ -17,6 +17,8 @@ type Config struct {
 	Server string
 	// user token to authenticate with the Vela server
 	Token string
+	// depth of builds search in downstream repo
+	Depth int
 	// the app name utilizing this config
 	AppName string
 	// the app version utilizing this config
