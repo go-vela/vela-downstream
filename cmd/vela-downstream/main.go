@@ -131,6 +131,13 @@ func main() {
 			Name:     "config.token",
 			Usage:    "user token to authenticate with the Vela server",
 		},
+		&cli.IntFlag{
+			EnvVars:  []string{"PARAMETER_DEPTH", "DOWNSTREAM_DEPTH"},
+			FilePath: "/vela/parameters/downstream/depth,/vela/secrets/downstream/depth",
+			Name:     "config.depth",
+			Usage:    "number of builds to search for downstream repositories",
+			Value:    50,
+		},
 
 		// Repo Flags
 
@@ -192,6 +199,7 @@ func run(c *cli.Context) error {
 		Config: &Config{
 			Server:     c.String("config.server"),
 			Token:      c.String("config.token"),
+			Depth:      c.Int("config.depth"),
 			AppName:    c.App.Name,
 			AppVersion: c.App.Version,
 		},

@@ -79,6 +79,7 @@ func (b *Build) Validate() error {
 		constants.StatusPending,
 		constants.StatusRunning,
 		constants.StatusSuccess,
+		"any",
 	}
 
 	// iterate through the build statuses provided
