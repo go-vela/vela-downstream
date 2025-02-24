@@ -5,10 +5,10 @@ package version
 import (
 	"runtime"
 
-	"github.com/go-vela/server/version"
+	"github.com/Masterminds/semver/v3"
 	"github.com/sirupsen/logrus"
 
-	"github.com/Masterminds/semver/v3"
+	"github.com/go-vela/server/version"
 )
 
 var (
