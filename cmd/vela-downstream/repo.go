@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	api "github.com/go-vela/server/api/types"
-
 	"github.com/sirupsen/logrus"
+
+	api "github.com/go-vela/server/api/types"
 )
 
 // Repo represents the plugin configuration for Repo information.
