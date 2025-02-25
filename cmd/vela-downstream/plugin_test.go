@@ -5,7 +5,7 @@ package main
 import (
 	"testing"
 
-	"github.com/go-vela/types/constants"
+	"github.com/go-vela/server/constants"
 )
 
 func TestDownstream_Plugin_Exec_Error(t *testing.T) {

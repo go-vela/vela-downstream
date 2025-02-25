@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-vela/types/constants"
 	"github.com/sirupsen/logrus"
+
+	"github.com/go-vela/server/constants"
 )
 
 // Build represents the plugin configuration for Build information.

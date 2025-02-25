@@ -3,14 +3,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/go-vela/sdk-go/vela"
 	api "github.com/go-vela/server/api/types"
-	"github.com/go-vela/types/constants"
-	"github.com/sirupsen/logrus"
+	"github.com/go-vela/server/constants"
 )
 
 // Plugin represents the configuration loaded for the plugin.
@@ -114,7 +116,7 @@ func (p *Plugin) Exec() error {
 				continue
 			}
 
-			return fmt.Errorf(msg)
+			return errors.New(msg)
 		}
 
 		logrus.Infof("restarting build %s/%d", repo.GetFullName(), build.GetNumber())

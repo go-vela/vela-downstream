@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-vela/types/constants"
+	"github.com/go-vela/server/constants"
 )
 
 func TestDownstream_Build_Validate(t *testing.T) {

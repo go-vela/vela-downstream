@@ -6,16 +6,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
 	"time"
-
-	"github.com/go-vela/types/constants"
-	"github.com/go-vela/vela-downstream/version"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
 	_ "github.com/joho/godotenv/autoload"
+
+	"github.com/go-vela/server/constants"
+	"github.com/go-vela/vela-downstream/version"
 )
 
 func main() {
@@ -56,7 +55,6 @@ func main() {
 	// Plugin Flags
 
 	app.Flags = []cli.Flag{
-
 		&cli.StringFlag{
 			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
 			FilePath: "/vela/parameters/downstream/log_level,/vela/secrets/downstream/log_level",
