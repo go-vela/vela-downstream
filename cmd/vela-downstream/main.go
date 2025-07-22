@@ -3,8 +3,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"net/mail"
 	"os"
 	"time"
 
@@ -31,130 +33,172 @@ func main() {
 	fmt.Fprintf(os.Stdout, "%s\n", string(bytes))
 
 	// create new CLI application
-	app := cli.NewApp()
-
 	// Plugin Information
-
-	app.Name = "vela-downstream"
-	app.HelpName = "vela-downstream"
-	app.Usage = "Vela Downstream plugin for triggering builds in other repos"
-	app.Copyright = "Copyright 2020 Target Brands, Inc. All rights reserved."
-	app.Authors = []*cli.Author{
-		{
-			Name:  "Vela Admins",
-			Email: "vela@target.com",
+	cmd := cli.Command{
+		Name:      "vela-downstream",
+		Usage:     "Vela Downstream plugin for triggering builds in other repos",
+		Copyright: "Copyright 2020 Target Brands, Inc. All rights reserved.",
+		Authors: []any{
+			&mail.Address{
+				Name:    "Vela Admins",
+				Address: "vela@target.com",
+			},
 		},
+		Version: v.Semantic(),
+		Action:  run,
 	}
-
-	// Plugin Metadata
-
-	app.Action = run
-	app.Compiled = time.Now()
-	app.Version = v.Semantic()
 
 	// Plugin Flags
 
-	app.Flags = []cli.Flag{
+	cmd.Flags = []cli.Flag{
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
-			FilePath: "/vela/parameters/downstream/log_level,/vela/secrets/downstream/log_level",
-			Name:     "log.level",
-			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:    "info",
+			Name:  "log.level",
+			Usage: "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Value: "info",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_LOG_LEVEL"),
+				cli.EnvVar("DOWNSTREAM_LOG_LEVEL"),
+				cli.File("/vela/parameters/downstream/log_level"),
+				cli.File("/vela/secrets/downstream/log_level"),
+			),
 		},
 
 		// Build Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_BRANCH", "DOWNSTREAM_BRANCH"},
-			FilePath: "/vela/parameters/downstream/branch,/vela/secrets/downstream/branch",
-			Name:     "build.branch",
-			Usage:    "branch to trigger a build for the repo",
+			Name:  "build.branch",
+			Usage: "branch to trigger a build for the repo",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_BRANCH"),
+				cli.EnvVar("DOWNSTREAM_BRANCH"),
+				cli.File("/vela/parameters/downstream/branch"),
+				cli.File("/vela/secrets/downstream/branch"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_EVENT", "DOWNSTREAM_EVENT"},
-			FilePath: "/vela/parameters/downstream/event,/vela/secrets/downstream/event",
-			Name:     "build.event",
-			Usage:    "event to trigger a build for the repo",
-			Value:    constants.EventPush,
+			Name:  "build.event",
+			Usage: "event to trigger a build for the repo",
+			Value: constants.EventPush,
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_EVENT"),
+				cli.EnvVar("DOWNSTREAM_EVENT"),
+				cli.File("/vela/parameters/downstream/event"),
+				cli.File("/vela/secrets/downstream/event"),
+			),
 		},
 		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_STATUS", "DOWNSTREAM_STATUS"},
-			FilePath: "/vela/parameters/downstream/status,/vela/secrets/downstream/status",
-			Name:     "build.status",
-			Usage:    "list of statuses to trigger a build for the repo",
-			Value:    cli.NewStringSlice(constants.StatusSuccess),
+			Name:  "build.status",
+			Usage: "list of statuses to trigger a build for the repo",
+			Value: []string{constants.StatusSuccess},
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_STATUS"),
+				cli.EnvVar("DOWNSTREAM_STATUS"),
+				cli.File("/vela/parameters/downstream/status"),
+				cli.File("/vela/secrets/downstream/status"),
+			),
 		},
 		&cli.BoolFlag{
-			EnvVars:  []string{"PARAMETER_CONTINUE_ON_NOT_FOUND", "DOWNSTREAM_CONTINUE_ON_NOT_FOUND"},
-			FilePath: "/vela/parameters/downstream/report_back,/vela/secrets/downstream/report_back",
-			Name:     "build.continue",
-			Usage:    "determine whether the downstream plugin should continue through repo list if a build is not found to restart",
+			Name:  "build.continue",
+			Usage: "determine whether the downstream plugin should continue through repo list if a build is not found to restart",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_CONTINUE_ON_NOT_FOUND"),
+				cli.EnvVar("DOWNSTREAM_CONTINUE_ON_NOT_FOUND"),
+				cli.File("/vela/parameters/downstream/report_back"),
+				cli.File("/vela/secrets/downstream/report_back"),
+			),
 		},
 
 		// Build Check Flags
 
 		&cli.BoolFlag{
-			EnvVars:  []string{"PARAMETER_REPORT_BACK", "DOWNSTREAM_REPORT_BACK"},
-			FilePath: "/vela/parameters/downstream/report_back,/vela/secrets/downstream/report_back",
-			Name:     "build-check.enabled",
-			Usage:    "determine whether the downstream plugin should wait for its triggered builds and report their statuses",
+			Name:  "build-check.enabled",
+			Usage: "determine whether the downstream plugin should wait for its triggered builds and report their statuses",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_REPORT_BACK"),
+				cli.EnvVar("DOWNSTREAM_REPORT_BACK"),
+				cli.File("/vela/parameters/downstream/report_back"),
+				cli.File("/vela/secrets/downstream/report_back"),
+			),
 		},
 		&cli.DurationFlag{
-			EnvVars:  []string{"PARAMETER_TIMEOUT", "DOWNSTREAM_TIMEOUT"},
-			FilePath: "/vela/parameters/downstream/timeout,/vela/secrets/downstream/timeout",
-			Name:     "build-check.timeout",
-			Usage:    "timeout for checking on triggered build statuses",
-			Value:    30 * time.Minute,
+			Name:  "build-check.timeout",
+			Usage: "timeout for checking on triggered build statuses",
+			Value: 30 * time.Minute,
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_TIMEOUT"),
+				cli.EnvVar("DOWNSTREAM_TIMEOUT"),
+				cli.File("/vela/parameters/downstream/timeout"),
+				cli.File("/vela/secrets/downstream/timeout"),
+			),
 		},
 		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_TARGET_STATUS", "DOWNSTREAM_TARGET_STATUS"},
-			FilePath: "/vela/parameters/downstream/target_status,/vela/secrets/downstream/target_status",
-			Name:     "build-check.status",
-			Usage:    "list of statuses that constitute a successful triggered build",
-			Value:    cli.NewStringSlice(constants.StatusSuccess),
+			Name:  "build-check.status",
+			Usage: "list of statuses that constitute a successful triggered build",
+			Value: []string{constants.StatusSuccess},
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_TARGET_STATUS"),
+				cli.EnvVar("DOWNSTREAM_TARGET_STATUS"),
+				cli.File("/vela/parameters/downstream/target_status"),
+				cli.File("/vela/secrets/downstream/target_status"),
+			),
 		},
 
 		// Config Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_SERVER", "DOWNSTREAM_SERVER"},
-			FilePath: "/vela/parameters/downstream/server,/vela/secrets/downstream/server",
-			Name:     "config.server",
-			Usage:    "Vela server to authenticate with",
+			Name:  "config.server",
+			Usage: "Vela server to authenticate with",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_SERVER"),
+				cli.EnvVar("DOWNSTREAM_SERVER"),
+				cli.File("/vela/parameters/downstream/server"),
+				cli.File("/vela/secrets/downstream/server"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_TOKEN", "DOWNSTREAM_TOKEN"},
-			FilePath: "/vela/parameters/downstream/token,/vela/secrets/downstream/token",
-			Name:     "config.token",
-			Usage:    "user token to authenticate with the Vela server",
+			Name:  "config.token",
+			Usage: "user token to authenticate with the Vela server",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_TOKEN"),
+				cli.EnvVar("DOWNSTREAM_TOKEN"),
+				cli.File("/vela/parameters/downstream/token"),
+				cli.File("/vela/secrets/downstream/token"),
+			),
 		},
 		&cli.IntFlag{
-			EnvVars:  []string{"PARAMETER_DEPTH", "DOWNSTREAM_DEPTH"},
-			FilePath: "/vela/parameters/downstream/depth,/vela/secrets/downstream/depth",
-			Name:     "config.depth",
-			Usage:    "number of builds to search for downstream repositories",
-			Value:    50,
+			Name:  "config.depth",
+			Usage: "number of builds to search for downstream repositories",
+			Value: 50,
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_DEPTH"),
+				cli.EnvVar("DOWNSTREAM_DEPTH"),
+				cli.File("/vela/parameters/downstream/depth"),
+				cli.File("/vela/secrets/downstream/depth"),
+			),
 		},
 
 		// Repo Flags
 
 		&cli.StringSliceFlag{
-			EnvVars:  []string{"PARAMETER_REPOS", "DOWNSTREAM_REPOS"},
-			FilePath: "/vela/parameters/downstream/repos,/vela/secrets/downstream/repos",
-			Name:     "repo.names",
-			Usage:    "list of <org>/<repo> names to trigger",
+			Name:  "repo.names",
+			Usage: "list of <org>/<repo> names to trigger",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_REPOS"),
+				cli.EnvVar("DOWNSTREAM_REPOS"),
+				cli.File("/vela/parameters/downstream/repos"),
+				cli.File("/vela/secrets/downstream/repos"),
+			),
 		},
 	}
 
-	err = app.Run(os.Args)
+	err = cmd.Run(context.Background(), os.Args)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 }
 
 // run executes the plugin based off the configuration provided.
-func run(c *cli.Context) error {
+func run(_ context.Context, c *cli.Command) error {
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
@@ -198,8 +242,8 @@ func run(c *cli.Context) error {
 			Server:     c.String("config.server"),
 			Token:      c.String("config.token"),
 			Depth:      c.Int("config.depth"),
-			AppName:    c.App.Name,
-			AppVersion: c.App.Version,
+			AppName:    c.Name,
+			AppVersion: c.Version,
 		},
 		// repo configuration
 		Repo: &Repo{
