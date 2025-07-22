@@ -1,6 +1,6 @@
 module github.com/go-vela/vela-downstream
 
-go 1.23.6
+go 1.24.5
 
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
