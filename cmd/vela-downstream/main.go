@@ -19,7 +19,7 @@ import (
 	"github.com/go-vela/vela-downstream/version"
 )
 
-func main() {
+func main() { //nolint: funlen // length of main function is acceptable for CLI applications
 	// capture application version information
 	v := version.New()
 
