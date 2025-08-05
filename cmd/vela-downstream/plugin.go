@@ -35,7 +35,7 @@ func (p *Plugin) Exec() error {
 		return err
 	}
 
-	rBMap := make(map[*api.Repo]int)
+	rBMap := make(map[*api.Repo]int64)
 
 	// parse list of repos to trigger builds on
 	repos, err := p.Repo.Parse(p.Build.Branch)
@@ -150,7 +150,7 @@ func (p *Plugin) Exec() error {
 
 // Report is a plugin method that checks the build statuses of all the builds kicked off from the plugin.
 // It will continue to check the statuses on 30 second intervals until the timeout is reached.
-func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int) error {
+func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int64) error {
 	logrus.Info("waiting for 30 seconds to check status of downstream builds...")
 	// sleep to allow for all restart processing
 	time.Sleep(30 * time.Second)
@@ -158,7 +158,7 @@ func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int) error {
 	// set timeout
 	timeout := time.Now().Add(p.Build.Timeout).Unix()
 
-	successMap := make(map[int]bool)
+	successMap := make(map[int64]bool)
 
 	for time.Now().Unix() < timeout {
 		logrus.Debug("checking build statuses of downstream builds...")
