@@ -25,7 +25,7 @@ func TestDownstream_Plugin_Exec_Error(t *testing.T) {
 		},
 	}
 
-	err := p.Exec()
+	err := p.Exec(t.Context())
 	if err == nil {
 		t.Errorf("Exec should have returned err")
 	}

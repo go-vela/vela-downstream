@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -26,7 +27,7 @@ type Plugin struct {
 }
 
 // Exec formats and runs the commands for triggering builds in Vela.
-func (p *Plugin) Exec() error {
+func (p *Plugin) Exec(ctx context.Context) error {
 	logrus.Debug("running plugin with provided configuration")
 
 	// create new Vela client from config configuration
@@ -57,12 +58,9 @@ func (p *Plugin) Exec() error {
 			Branch: repo.GetBranch(),
 			Event:  p.Build.Event,
 			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#ListOptions
-			ListOptions: vela.ListOptions{
-				// set the default starting page for options
-				Page: 1,
-				// set the max per page for options
-				PerPage: 10,
-			},
+			// set the default starting page for options
+			Page:    1,
+			PerPage: 10,
 		}
 
 		// loop to capture *ALL* the builds
@@ -70,7 +68,7 @@ func (p *Plugin) Exec() error {
 			// send API call to capture a list of builds for the repo
 			//
 			// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.GetAll
-			builds, resp, err := client.Build.GetAll(repo.GetOrg(), repo.GetName(), opts)
+			builds, resp, err := client.Build.GetAll(ctx, repo.GetOrg(), repo.GetName(), opts)
 			if err != nil {
 				return fmt.Errorf("unable to list builds for %s: %w", repo.GetFullName(), err)
 			}
@@ -124,7 +122,7 @@ func (p *Plugin) Exec() error {
 		// send API call to restart the latest build for the repo
 		//
 		// https://pkg.go.dev/github.com/go-vela/sdk-go/vela#BuildService.Restart
-		b, _, err := client.Build.Restart(repo.GetOrg(), repo.GetName(), build.GetNumber())
+		b, _, err := client.Build.Restart(ctx, repo.GetOrg(), repo.GetName(), build.GetNumber())
 		if err != nil {
 			return fmt.Errorf("unable to restart build %s/%d: %w", repo.GetFullName(), build.GetNumber(), err)
 		}
@@ -140,7 +138,7 @@ func (p *Plugin) Exec() error {
 		return nil
 	}
 
-	err = p.Report(client, rBMap)
+	err = p.Report(ctx, client, rBMap)
 	if err != nil {
 		return err
 	}
@@ -150,7 +148,7 @@ func (p *Plugin) Exec() error {
 
 // Report is a plugin method that checks the build statuses of all the builds kicked off from the plugin.
 // It will continue to check the statuses on 30 second intervals until the timeout is reached.
-func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int64) error {
+func (p *Plugin) Report(ctx context.Context, client *vela.Client, rBMap map[*api.Repo]int64) error {
 	logrus.Info("waiting for 30 seconds to check status of downstream builds...")
 	// sleep to allow for all restart processing
 	time.Sleep(30 * time.Second)
@@ -168,7 +166,7 @@ func (p *Plugin) Report(client *vela.Client, rBMap map[*api.Repo]int64) error {
 				continue
 			}
 
-			build, _, err := client.Build.Get(r.GetOrg(), r.GetName(), num)
+			build, _, err := client.Build.Get(ctx, r.GetOrg(), r.GetName(), num)
 			if err != nil {
 				return fmt.Errorf("unable to get build %s/%d: %w", r.GetFullName(), num, err)
 			}
