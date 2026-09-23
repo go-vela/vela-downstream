@@ -198,7 +198,7 @@ func main() { //nolint: funlen // length of main function is acceptable for CLI 
 }
 
 // run executes the plugin based off the configuration provided.
-func run(_ context.Context, c *cli.Command) error {
+func run(ctx context.Context, c *cli.Command) error {
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
@@ -258,5 +258,5 @@ func run(_ context.Context, c *cli.Command) error {
 	}
 
 	// execute the plugin
-	return p.Exec()
+	return p.Exec(ctx)
 }
