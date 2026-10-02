@@ -8,7 +8,7 @@ require (
 	github.com/go-vela/server v0.28.8
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.10.2
-	github.com/urfave/cli/v3 v3.13.0
+	github.com/urfave/cli/v3 v3.14.0
 )
 
 require (
